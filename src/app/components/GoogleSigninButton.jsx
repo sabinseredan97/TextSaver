@@ -2,14 +2,17 @@
 
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
-import Button from "./Button";
+//import Button from "./Button";
 
 export default function GoogleSignInButton() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
 
   return (
-    <Button onClick={() => signIn("google", { callbackUrl })}>
+    <button
+      className="btn btn-primary"
+      onClick={() => signIn("google", { callbackUrl })}
+    >
       <svg
         aria-hidden="true"
         focusable="false"
@@ -25,6 +28,6 @@ export default function GoogleSignInButton() {
         ></path>
       </svg>
       Continue with Google
-    </Button>
+    </button>
   );
 }
