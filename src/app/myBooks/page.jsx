@@ -13,7 +13,7 @@ export default function Page() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["myBooks"],
     queryFn: () =>
-      fetch("http://localhost:3000/api/getBooks", {
+      fetch(`${env("BASE_URL")}/api/getBooks`, {
         method: "GET",
       }).then((res) => res.json()),
   });

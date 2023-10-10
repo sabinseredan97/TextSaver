@@ -18,7 +18,7 @@ export default function Page() {
     queryKey: [`book-${decodeURIComponent(bookId)}`],
     queryFn: () =>
       fetch(
-        `http://localhost:3000/api/getBookById/${decodeURIComponent(bookId)}`,
+        `${env("BASE_URL")}/api/getBookById/${decodeURIComponent(bookId)}`,
         {
           method: "GET",
         }
@@ -47,7 +47,7 @@ export default function Page() {
   async function deleteBook() {
     try {
       await fetch(
-        `http://localhost:3000/api/delete/book/${decodeURIComponent(bookId)}`,
+        `${env("BASE_URL")}/api/delete/book/${decodeURIComponent(bookId)}`,
         {
           method: "DELETE",
         }
