@@ -16,7 +16,7 @@ export default function Page() {
   const { data, isLoading, error } = useQuery({
     queryKey: [`note-${noteId}`],
     queryFn: () =>
-      fetch(`${env("BASE_URL")}/api/getNoteById/${noteId}`, {
+      fetch(`/api/getNoteById/${noteId}`, {
         method: "GET",
       }).then((res) => res.json()),
   });
@@ -43,7 +43,7 @@ export default function Page() {
   async function saveEditedNote() {
     editedNote = textareaRef.current.value;
     try {
-      await fetch(`${env("BASE_URL")}/api/editNote`, {
+      await fetch(`/api/editNote`, {
         method: "POST",
         body: JSON.stringify({ noteId, editedNote }),
       });

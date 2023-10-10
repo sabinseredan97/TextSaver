@@ -32,7 +32,7 @@ export default function Page() {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    await fetch(`${env("BASE_URL")}/api/addChVerse`, {
+    await fetch(`/api/addChVerse`, {
       method: "POST",
       body: JSON.stringify(data),
     });

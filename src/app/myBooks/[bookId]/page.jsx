@@ -17,12 +17,9 @@ export default function Page() {
   const { data, isLoading, error } = useQuery({
     queryKey: [`book-${decodeURIComponent(bookId)}`],
     queryFn: () =>
-      fetch(
-        `${env("BASE_URL")}/api/getBookById/${decodeURIComponent(bookId)}`,
-        {
-          method: "GET",
-        }
-      ).then((res) => res.json()),
+      fetch(`/api/getBookById/${decodeURIComponent(bookId)}`, {
+        method: "GET",
+      }).then((res) => res.json()),
   });
 
   const { data: session } = useSession({
@@ -46,12 +43,9 @@ export default function Page() {
 
   async function deleteBook() {
     try {
-      await fetch(
-        `${env("BASE_URL")}/api/delete/book/${decodeURIComponent(bookId)}`,
-        {
-          method: "DELETE",
-        }
-      );
+      await fetch(`/api/delete/book/${decodeURIComponent(bookId)}`, {
+        method: "DELETE",
+      });
       setIsDeleting(true);
     } catch (error) {
       setIsDeleting(false);

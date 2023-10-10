@@ -33,7 +33,7 @@ export default function Page() {
     verse = verseRef.current.value;
     note = noteRef.current.value;
     try {
-      await fetch(`${env("BASE_URL")}/api/new`, {
+      await fetch(`/api/new`, {
         method: "POST",
         body: JSON.stringify({ book, chapter, verse, note }),
       });
