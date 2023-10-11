@@ -2,6 +2,7 @@
 import { useSession } from "next-auth/react";
 import { redirect, useParams } from "next/navigation";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 export default function Page() {
   const params = useParams();
@@ -11,7 +12,7 @@ export default function Page() {
   const [data, setData] = useState({
     bookId: params.bookId,
     chaptersversesId: params.chaptersverses,
-    note: null,
+    note: "",
   });
 
   const { data: session } = useSession({
@@ -36,11 +37,20 @@ export default function Page() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-
-    await fetch(`/api/addNote`, {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
+    try {
+      if (data.note === "") throw new Error("Please add a note");
+      const response = await fetch(`/api/addNote`, {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+      if (response.status === 201) toast.success("Note added!");
+      setData({
+        ...data,
+        note: "",
+      });
+    } catch (error) {
+      toast.warn(error.message);
+    }
   }
 
   return (
@@ -102,6 +112,7 @@ export default function Page() {
             id="note"
             rows={5}
             placeholder="Note"
+            value={data.note}
           />
         </div>
       </div>

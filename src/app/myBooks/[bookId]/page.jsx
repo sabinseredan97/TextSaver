@@ -1,20 +1,21 @@
 "use client";
 
-import { use, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { redirect, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Spinner } from "react-bootstrap";
+import { toast } from "react-toastify";
 
 export default function Page() {
   const params = useParams();
   const bookId = params.bookId;
   const [searchInput, setSearchInput] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
-  const [shouldRedirect, setShouldRedirect] = useState(false);
+  const queryClient = useQueryClient();
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: [`book-${decodeURIComponent(bookId)}`],
     queryFn: () =>
       fetch(`/api/getBookById/${decodeURIComponent(bookId)}`, {
@@ -43,31 +44,31 @@ export default function Page() {
 
   async function deleteBook() {
     try {
+      setIsDeleting(true);
       await fetch(`/api/delete/book/${decodeURIComponent(bookId)}`, {
         method: "DELETE",
       });
-      setIsDeleting(true);
+      queryClient.cancelQueries([`book-${decodeURIComponent(bookId)}`]);
+      refetch();
     } catch (error) {
-      setIsDeleting(false);
+      toast.error("A error occured!");
     } finally {
-      if (isDeleting) setShouldRedirect(true);
       setIsDeleting(false);
+      toast.success("Book deleted!");
     }
   }
 
-  if (shouldRedirect && !isDeleting) redirect("/myBooks?callbackUrl=/myBooks");
-
-  if (isLoading || isDeleting)
-    return (
-      <div className="text-center">
+  let content;
+  if (isLoading || isDeleting) {
+    content = (
+      <div className="mt-5 text-center">
         <Spinner animation="grow" variant="primary" />
         <Spinner animation="grow" variant="warning" />
         <Spinner animation="grow" variant="danger" />
       </div>
     );
-
-  if (error)
-    return (
+  } else if (isError || data.message === "Error!") {
+    content = (
       <div
         className="alert alert-danger d-flex align-items-center"
         role="alert"
@@ -75,97 +76,108 @@ export default function Page() {
         Nothing Found
       </div>
     );
+  }
 
   return (
     <>
-      {data && (
-        <div className="card text-center mt-1">
-          <div className="card-header">Book</div>
-          <div className="card-body">
-            <h5 className="card-title">{data.name}</h5>
-            <div className="text-center">
-              <Link
-                href={`/myBooks/${data.id}/addChVers`}
-                className="card-link btn btn-link"
-              >
-                New Chapter/s and Verse/s
-              </Link>
-              <button className="btn btn-danger" onClick={deleteBook}>
-                Delete Book
-              </button>
-            </div>
+      {!content ? (
+        <section>
+          {data && !data.message && (
+            <div className="card text-center mt-1">
+              <div className="card-header">Book</div>
+              <div className="card-body">
+                <h5 className="card-title">{data.name}</h5>
+                <div className="text-center">
+                  <Link
+                    href={`/myBooks/${data.id}/addChVers`}
+                    className="card-link btn btn-success me-1 mb-1"
+                  >
+                    New Chapter/s and Verse/s
+                  </Link>
+                  <button className="btn btn-danger" onClick={deleteBook}>
+                    Delete Book
+                  </button>
+                </div>
 
-            <input
-              type="number"
-              className="form-control mr-sm-2 mb-2 mt-1"
-              placeholder="Search for a chapter"
-              aria-label="Search"
-              onChange={onChange}
-              value={searchInput}
-            />
+                <input
+                  type="number"
+                  className="form-control mr-sm-2 mb-2 mt-1"
+                  placeholder="Search for a chapter"
+                  aria-label="Search"
+                  onChange={onChange}
+                  value={searchInput}
+                />
 
-            {data.chaptersverses
-              .filter((chapter) => {
-                return searchInput === ""
-                  ? chapter.chapter
-                  : chapter.chapter === searchInput;
-              })
-              .map((item) => {
-                return (
-                  <div key={item.id} className="card text-center mb-2">
-                    <div className="card-body">
-                      <h5 className="card-title">Chapter: {item.chapter}</h5>
-                      <h6 className="card-subtitle mb-2 text-muted">
-                        Verse/s: {item.verses}
-                      </h6>
-                      <h6 className="card mb-2 mt-2">Notes</h6>
-                      {data.notes
-                        .filter((note) => item.id === note.chaptersversesId)
-                        .map((filteredNote) => {
-                          return (
-                            <div
-                              className="card mb-2 text-center"
-                              key={filteredNote.id}
-                            >
-                              <textarea
-                                readOnly
-                                className="card-text form-control"
-                                rows={isMobile ? 3 : 5}
-                                value={filteredNote.text}
-                              />
-                              <div className="text-center mt-1 mb-1">
-                                <Link
-                                  href={`/viewNote/${encodeURIComponent(
-                                    filteredNote.id
-                                  )}`}
-                                  className="card-link btn btn-dark"
+                {data.chaptersverses
+                  .filter((chapter) => {
+                    return searchInput === ""
+                      ? chapter.chapter
+                      : chapter.chapter === searchInput;
+                  })
+                  .map((item) => {
+                    return (
+                      <div key={item.id} className="card text-center mb-2">
+                        <div className="card-body">
+                          <h5 className="card-title">
+                            Chapter: {item.chapter}
+                          </h5>
+                          <h6 className="card-subtitle mb-2 text-muted">
+                            Verse/s: {item.verses}
+                          </h6>
+                          <h6 className="card mb-2 mt-2">Notes</h6>
+                          <Link
+                            href={`/myBooks/${
+                              data.id
+                            }/addNote/${encodeURIComponent(
+                              item.id
+                            )}/${encodeURIComponent(
+                              data.name
+                            )}/${encodeURIComponent(
+                              item.chapter
+                            )}/${encodeURIComponent(
+                              item.verses ? item.verses : null
+                            )}`}
+                            className="card-link btn btn-success mb-2"
+                          >
+                            Add Note
+                          </Link>
+                          {data.notes
+                            .filter((note) => item.id === note.chaptersversesId)
+                            .map((filteredNote) => {
+                              return (
+                                <div
+                                  className="card mb-2 text-center"
+                                  key={filteredNote.id}
                                 >
-                                  View Note
-                                </Link>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      <Link
-                        href={`/myBooks/${data.id}/addNote/${encodeURIComponent(
-                          item.id
-                        )}/${encodeURIComponent(
-                          data.name
-                        )}/${encodeURIComponent(
-                          item.chapter
-                        )}/${encodeURIComponent(
-                          item.verses ? item.verses : null
-                        )}`}
-                        className="card-link btn btn-link"
-                      >
-                        Add Note
-                      </Link>
-                    </div>
-                  </div>
-                );
-              })}
-          </div>
-        </div>
+                                  <textarea
+                                    readOnly
+                                    className="card-text form-control"
+                                    rows={isMobile ? 3 : 5}
+                                    value={filteredNote.text}
+                                  />
+                                  <div className="text-center mt-1 mb-1">
+                                    <Link
+                                      href={`/viewNote/${encodeURIComponent(
+                                        filteredNote.id
+                                      )}`}
+                                      className="card-link btn btn-dark"
+                                    >
+                                      View Note
+                                    </Link>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
+        </section>
+      ) : (
+        content
       )}
     </>
   );

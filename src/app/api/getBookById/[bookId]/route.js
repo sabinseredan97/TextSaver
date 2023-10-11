@@ -8,7 +8,10 @@ export async function GET(req, { params }) {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    return NextResponse.json({ message: "You are not logged in." });
+    return NextResponse.json(
+      { message: "You are not logged in." },
+      { status: 401 }
+    );
   }
 
   try {
@@ -27,10 +30,10 @@ export async function GET(req, { params }) {
       orderBy: { id: "desc" },
     });
 
-    if (!book) throw new Error("Not Found");
+    if (!book) throw new Error();
 
-    return NextResponse.json(book);
+    return NextResponse.json(book, { status: 200 });
   } catch (error) {
-    throw new Error("Not Found");
+    return NextResponse.json({ message: "Error!" }, { status: 404 });
   }
 }

@@ -8,7 +8,7 @@ export async function POST(req) {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    return NextResponse.json({ message: "You are not logged in." });
+    return NextResponse.json({ message: "Unauthorised" }, { status: 401 });
   }
 
   try {
@@ -19,8 +19,8 @@ export async function POST(req) {
       data: { text: editedNote },
     });
 
-    return NextResponse.json({ message: "Success!" });
+    return NextResponse.json({ message: "Success!" }, { status: 201 });
   } catch (error) {
-    throw new Error("Error");
+    return NextResponse.json({ message: "Error!" }, { status: 400 });
   }
 }

@@ -2,13 +2,16 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { prisma } from "@/db";
-import { getBookByUserId, getUser } from "@/services/api";
+import { getUser } from "@/services/api";
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    return NextResponse.json({ message: "You are not logged in." });
+    return NextResponse.json(
+      { message: "You are not logged in." },
+      { status: 401 }
+    );
   }
   try {
     const { chapter, verse, bookId, note } = await req.json();
@@ -43,8 +46,8 @@ export async function POST(req) {
       },
     });
 
-    return NextResponse.json({ message: "Success!" });
+    return NextResponse.json({ message: "Success!" }, { status: 201 });
   } catch (error) {
-    throw new Error("Error!");
+    return NextResponse.json({ message: "Error!" }, { status: 400 });
   }
 }

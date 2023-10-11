@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/db";
 
-export async function POST(req) {
+export async function DELETE(req, { params }) {
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -14,17 +14,11 @@ export async function POST(req) {
   }
 
   try {
-    const { chaptersversesId, bookId, note } = await req.json();
+    const noteId = parseInt(params.noteId);
 
-    await prisma.Notes.create({
-      data: {
-        text: note,
-        chaptersversesId: parseInt(chaptersversesId),
-        bookId: parseInt(bookId),
-      },
-    });
+    await prisma.Notes.delete({ where: { id: noteId } });
 
-    return NextResponse.json({ message: "Success!" }, { status: 201 });
+    return NextResponse.json({ message: "Note Deleted!" }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ message: "Error!" }, { status: 400 });
   }

@@ -1,18 +1,17 @@
 "use client";
 
-import { useRef } from "react";
+import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
+import { toast } from "react-toastify";
 
 export default function Page() {
-  let book = "";
-  let chapter = null;
-  let verse = null;
-  let note = "";
-  const bookRef = useRef();
-  const chapterRef = useRef();
-  const verseRef = useRef();
-  const noteRef = useRef();
+  const [data, setData] = useState({
+    book: "",
+    chapter: "",
+    verse: "",
+    note: "",
+  });
 
   const { data: session } = useSession({
     required: true,
@@ -28,17 +27,24 @@ export default function Page() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    book = bookRef.current.value;
-    chapter = chapterRef.current.value;
-    verse = verseRef.current.value;
-    note = noteRef.current.value;
     try {
-      await fetch(`/api/new`, {
+      if (data.book === "" || data.chapter === "" || data.note === "")
+        throw new Error("Fill the empty fields");
+      if (data.verse === "") setData({ ...data, verse: null });
+
+      const response = await fetch(`/api/new`, {
         method: "POST",
-        body: JSON.stringify({ book, chapter, verse, note }),
+        body: JSON.stringify(data),
       });
+      setData({
+        book: "",
+        chapter: "",
+        verse: "",
+        note: "",
+      });
+      if (response.status === 201) toast.success("Created!");
     } catch (error) {
-      console.log(error);
+      toast.error(error.message);
     }
   }
 
@@ -50,12 +56,13 @@ export default function Page() {
         </label>
         <div className="col-sm-10">
           <input
-            ref={bookRef}
+            onChange={(e) => setData({ ...data, book: e.target.value })}
             name="book"
             type="text"
             className="form-control"
             id="book"
             placeholder="Book"
+            value={data.book}
           />
         </div>
       </div>
@@ -66,12 +73,13 @@ export default function Page() {
         </label>
         <div className="col-sm-10">
           <input
-            ref={chapterRef}
+            onChange={(e) => setData({ ...data, chapter: e.target.value })}
             name="chapter"
             type="text"
             className="form-control"
             id="chapter"
             placeholder="Chapter"
+            value={data.chapter}
           />
         </div>
       </div>
@@ -82,12 +90,13 @@ export default function Page() {
         </label>
         <div className="col-sm-10">
           <input
-            ref={verseRef}
+            onChange={(e) => setData({ ...data, verse: e.target.value })}
             name="verse"
             type="text"
             className="form-control"
             id="verse"
             placeholder="Verse/s"
+            value={data.verse}
           />
         </div>
       </div>
@@ -98,12 +107,13 @@ export default function Page() {
         </label>
         <div className="col-sm-10">
           <textarea
-            ref={noteRef}
+            onChange={(e) => setData({ ...data, note: e.target.value })}
             name="note"
             className="form-control"
             id="note"
             rows={3}
             placeholder="Note"
+            value={data.note}
           />
         </div>
       </div>

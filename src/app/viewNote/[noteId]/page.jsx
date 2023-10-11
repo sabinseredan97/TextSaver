@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Spinner } from "react-bootstrap";
 import { redirect, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { toast } from "react-toastify";
 
 export default function Page() {
   const params = useParams();
@@ -13,7 +14,7 @@ export default function Page() {
   const [editNote, setEditNote] = useState(true);
   const textareaRef = useRef();
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: [`note-${noteId}`],
     queryFn: () =>
       fetch(`/api/getNoteById/${noteId}`, {
@@ -43,28 +44,44 @@ export default function Page() {
   async function saveEditedNote() {
     editedNote = textareaRef.current.value;
     try {
-      await fetch(`/api/editNote`, {
+      if (editedNote === "") throw new Error("Note cannot be empty!");
+      const response = await fetch(`/api/editNote`, {
         method: "POST",
         body: JSON.stringify({ noteId, editedNote }),
       });
+      if (response.status === 201) toast.success("Note edited");
     } catch (error) {
-      console.log(error);
+      toast.warn(error.message);
     } finally {
       setEditNote(!editNote);
     }
   }
 
-  if (isLoading)
-    return (
-      <div className="text-center">
+  async function deleteNote() {
+    try {
+      const response = await fetch(`/api/delete/note/${noteId}`, {
+        method: "DELETE",
+      });
+      if (response.status === 200) {
+        toast.success("Note deleted!");
+        refetch();
+      }
+    } catch (error) {
+      toast.error("A error occured!");
+    }
+  }
+
+  let content;
+  if (isLoading) {
+    content = (
+      <div className="mt-5 text-center">
         <Spinner animation="grow" variant="primary" />
         <Spinner animation="grow" variant="warning" />
         <Spinner animation="grow" variant="danger" />
       </div>
     );
-
-  if (error)
-    return (
+  } else if (isError || data.message === "Error!") {
+    content = (
       <div
         className="alert alert-danger d-flex align-items-center"
         role="alert"
@@ -72,37 +89,52 @@ export default function Page() {
         Nothing Found
       </div>
     );
+  }
 
   return (
-    <div>
-      {data && (
-        <div className="card">
-          <h5 className="card-header">{data.book.name}</h5>
-          <div className="card-body">
-            <h5 className="card-title">
-              {data.book.chaptersverses[0].chapter} {":"}{" "}
-              {data.book.chaptersverses[0].verses}
-            </h5>
-            <textarea
-              className="card-text form-control"
-              style={{ width: "100%" }}
-              rows={isMobile ? 17 : 27}
-              readOnly={editNote}
-              defaultValue={data.note.text}
-              ref={textareaRef}
-              //onChange={(e) => setEditedNote(e.target.value)}
-            ></textarea>
-          </div>
-          <div className="text-center">
-            <button onClick={enalbeEdit} className="btn btn-primary me-2">
-              Edit Note
-            </button>
-            <button onClick={saveEditedNote} className="btn btn-primary">
-              Save Note
-            </button>
-          </div>
-        </div>
+    <>
+      {!content ? (
+        <section>
+          {data && !data.message && (
+            <div className="card">
+              <h5 className="card-header">{data.book.name}</h5>
+              <div className="card-body">
+                <h5 className="card-title">
+                  {data.book.chaptersverses[0].chapter} {":"}{" "}
+                  {data.book.chaptersverses[0].verses}
+                </h5>
+                <textarea
+                  className="card-text form-control"
+                  style={{ width: "100%" }}
+                  rows={isMobile ? 17 : 27}
+                  readOnly={editNote}
+                  defaultValue={data.note.text}
+                  ref={textareaRef}
+                  //onChange={(e) => setEditedNote(e.target.value)}
+                ></textarea>
+              </div>
+              <div className="text-center">
+                <button onClick={enalbeEdit} className="btn btn-primary me-2">
+                  Edit Note
+                </button>
+                {!editNote && (
+                  <button
+                    onClick={saveEditedNote}
+                    className="btn btn-primary me-2"
+                  >
+                    Save Note
+                  </button>
+                )}
+                <button onClick={deleteNote} className="btn btn-danger me-2">
+                  Delete Note
+                </button>
+              </div>
+            </div>
+          )}
+        </section>
+      ) : (
+        content
       )}
-    </div>
+    </>
   );
 }

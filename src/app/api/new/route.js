@@ -9,7 +9,10 @@ export async function POST(req) {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    return NextResponse.json({ message: "You are not logged in." });
+    return NextResponse.json(
+      { message: "You are not logged in." },
+      { status: 401 }
+    );
   }
   try {
     const user = await getUser(session.user.email);
@@ -51,9 +54,8 @@ export async function POST(req) {
       },
     });
 
-    return NextResponse.json({ message: "Success!" });
+    return NextResponse.json({ message: "Success!" }, { status: 201 });
   } catch (error) {
-    console.log(error);
-    throw new Error("Error!");
+    return NextResponse.json({ message: "Error!" }, { status: 400 });
   }
 }

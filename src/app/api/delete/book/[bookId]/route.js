@@ -8,7 +8,10 @@ export async function DELETE(req, { params }) {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    return NextResponse.json({ message: "You are not logged in." });
+    return NextResponse.json(
+      { message: "You are not logged in." },
+      { status: 401 }
+    );
   }
 
   try {
@@ -16,14 +19,13 @@ export async function DELETE(req, { params }) {
     //throw new Error("Error!");
 
     const user = await getUser(session.user.email);
-    console.log(bookId);
 
     const book = await prisma.Book.findFirst({
       where: { AND: [{ id: bookId, userId: user.id }] },
       orderBy: { id: "desc" },
     });
 
-    if (!book) throw new Error("Not Found");
+    if (!book) throw new Error();
 
     await prisma.Notes.deleteMany({ where: { bookId: bookId } });
 
@@ -33,8 +35,8 @@ export async function DELETE(req, { params }) {
       where: { id: bookId },
     });
 
-    return NextResponse.json({ message: "Book Deleted!" });
+    return NextResponse.json({ message: "Book Deleted!" }, { status: 200 });
   } catch (error) {
-    throw new Error("Error!");
+    return NextResponse.json({ message: "Error!" }, { status: 400 });
   }
 }
