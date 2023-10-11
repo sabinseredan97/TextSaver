@@ -1,12 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the `users` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropTable
-DROP TABLE `users`;
-
 -- CreateTable
 CREATE TABLE `User` (
     `id` VARCHAR(191) NOT NULL,
@@ -69,10 +60,10 @@ CREATE TABLE `Book` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `ChaptersVersets` (
+CREATE TABLE `ChaptersVerses` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `chapter` VARCHAR(191) NOT NULL,
-    `versets` VARCHAR(191) NULL,
+    `verses` VARCHAR(191) NULL,
     `bookId` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
@@ -81,9 +72,9 @@ CREATE TABLE `ChaptersVersets` (
 -- CreateTable
 CREATE TABLE `Notes` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `text` VARCHAR(191) NOT NULL,
+    `text` LONGTEXT NOT NULL,
     `bookId` INTEGER NOT NULL,
-    `chaptersversetsId` INTEGER NOT NULL,
+    `chaptersversesId` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -98,10 +89,10 @@ ALTER TABLE `Session` ADD CONSTRAINT `Session_userId_fkey` FOREIGN KEY (`userId`
 ALTER TABLE `Book` ADD CONSTRAINT `Book_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `ChaptersVersets` ADD CONSTRAINT `ChaptersVersets_bookId_fkey` FOREIGN KEY (`bookId`) REFERENCES `Book`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `ChaptersVerses` ADD CONSTRAINT `ChaptersVerses_bookId_fkey` FOREIGN KEY (`bookId`) REFERENCES `Book`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Notes` ADD CONSTRAINT `Notes_bookId_fkey` FOREIGN KEY (`bookId`) REFERENCES `Book`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Notes` ADD CONSTRAINT `Notes_chaptersversetsId_fkey` FOREIGN KEY (`chaptersversetsId`) REFERENCES `ChaptersVersets`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Notes` ADD CONSTRAINT `Notes_chaptersversesId_fkey` FOREIGN KEY (`chaptersversesId`) REFERENCES `ChaptersVerses`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
