@@ -15,14 +15,14 @@ export async function DELETE(req, { params }) {
   }
 
   try {
-    const bookId = parseInt(params.bookId);
+    const bookId = params.bookId; //parseInt(params.bookId);
     //throw new Error("Error!");
 
     const user = await getUser(session.user.email);
 
     const book = await prisma.Book.findFirst({
       where: { AND: [{ id: bookId, userId: user.id }] },
-      orderBy: { id: "desc" },
+      orderBy: { createdAt: "desc" },
     });
 
     if (!book) throw new Error();

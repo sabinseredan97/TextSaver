@@ -13,27 +13,40 @@ export default function NavBar() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link as={Link} href="/create">
-              Add Book
-            </Nav.Link>
-            <Nav.Link as={Link} href="/myBooks">
-              My Books
-            </Nav.Link>
-            {/* <NavDropdown title="Account" id="basic-nav-dropdown">
-              <NavDropdown.Item as={Link} href="/profile">
-                Profile
-              </NavDropdown.Item>
-              <NavDropdown.Item as={Link} href="#action/3.2">
-                Another action
-              </NavDropdown.Item>
-              <NavDropdown.Item as={Link} href="#action/3.3">
-                Something
-              </NavDropdown.Item>
+            <NavDropdown title="Books" id="basic-nav-dropdown">
+              <Link
+                //as={Link}
+                className="btn btn-outline-dark ms-2"
+                href="/create"
+              >
+                Add Book
+              </Link>
               <NavDropdown.Divider />
-              <NavDropdown.Item as={Link} href="#action/3.4">
-                Separated link
-              </NavDropdown.Item>
-            </NavDropdown> */}
+              <Link
+                //as={Link}
+                className="btn btn-outline-dark ms-2"
+                href="/myBooks"
+              >
+                My Books
+              </Link>
+            </NavDropdown>
+            <NavDropdown title="Independent Notes" id="basic-nav-dropdown">
+              <Link
+                //as={Link}
+                className="btn btn-outline-dark ms-2 me-2"
+                href="/createIndependentNote"
+              >
+                Add Independent Note
+              </Link>
+              <NavDropdown.Divider />
+              <Link
+                //as={Link}
+                className="btn btn-outline-dark ms-2 me-2"
+                href="/myIndepenentNotes"
+              >
+                My Independent Notes
+              </Link>
+            </NavDropdown>
             <SignInButton />
           </Nav>
         </Navbar.Collapse>

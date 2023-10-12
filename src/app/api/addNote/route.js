@@ -19,8 +19,8 @@ export async function POST(req) {
     await prisma.Notes.create({
       data: {
         text: note,
-        chaptersversesId: parseInt(chaptersversesId),
-        bookId: parseInt(bookId),
+        chaptersversesId: chaptersversesId, //parseInt(chaptersversesId),
+        bookId: bookId, //parseInt(bookId),
       },
     });
 

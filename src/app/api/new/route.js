@@ -43,7 +43,7 @@ export async function POST(req) {
 
     const prismaChaptersVerses = await prisma.ChaptersVerses.findFirst({
       where: { bookId: prismaBook.id, chapter: chapter, verses: verse },
-      orderBy: { id: "desc" },
+      orderBy: { createdAt: "desc" },
     });
 
     await prisma.Notes.create({

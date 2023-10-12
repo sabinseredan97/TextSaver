@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "../../auth/[...nextauth]/route";
 import { prisma } from "@/db";
-import { getUser } from "@/services/api";
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
@@ -12,10 +11,10 @@ export async function POST(req) {
   }
 
   try {
-    const { noteId, editedNote } = await req.json();
+    const { independentNoteId, editedNote } = await req.json();
 
-    await prisma.Notes.update({
-      where: { id: noteId /*parseInt(noteId)*/ },
+    await prisma.IndependentNotes.update({
+      where: { id: independentNoteId /*parseInt(noteId)*/ },
       data: { text: editedNote },
     });
 

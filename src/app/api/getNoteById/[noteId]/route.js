@@ -15,7 +15,7 @@ export async function GET(req, { params }) {
   }
 
   try {
-    const noteId = parseInt(params.noteId);
+    const noteId = params.noteId; //parseInt(params.noteId);
 
     const user = await getUser(session.user.email);
 

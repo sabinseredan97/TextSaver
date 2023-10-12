@@ -14,9 +14,9 @@ export async function DELETE(req, { params }) {
   }
 
   try {
-    const noteId = params.noteId; //parseInt(params.noteId);
+    const independentNoteId = params.independentNotesId; //parseInt(params.noteId);
 
-    await prisma.Notes.delete({ where: { id: noteId } });
+    await prisma.IndependentNotes.delete({ where: { id: independentNoteId } });
 
     return NextResponse.json({ message: "Note Deleted!" }, { status: 200 });
   } catch (error) {

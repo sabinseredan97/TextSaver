@@ -13,7 +13,7 @@ export default async function Home() {
   return (
     <>
       <div className="row">
-        <div className="col-sm-6">
+        <div className="col-sm-6 mb-1">
           <div className="card">
             <div className="card-body">
               <h5 className="card-title">Add Book</h5>
@@ -28,7 +28,8 @@ export default async function Home() {
             </div>
           </div>
         </div>
-        <div className="col-sm-6">
+
+        <div className="col-sm-6 mb-1">
           <div className="card">
             <div className="card-body">
               <h5 className="card-title">My Books</h5>
@@ -38,6 +39,35 @@ export default async function Home() {
               </p>
               <Link href="/myBooks" className="btn btn-info">
                 See your books
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-sm-6 mb-1">
+          <div className="card">
+            <div className="card-body">
+              <h5 className="card-title">Add Independent Note</h5>
+              <p className="card-text">
+                Independent notes are just notes you want to add about anything,
+                they doesn't belong to anything but your account
+              </p>
+              <Link href="/createIndependentNote" className="btn btn-secondary">
+                Add a independent note
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-sm-6 mb-1">
+          <div className="card">
+            <div className="card-body">
+              <h5 className="card-title">My Independent Notes</h5>
+              <p className="card-text">
+                Here you can see you Independent Notes
+              </p>
+              <Link href="/myIndependentNotes" className="btn btn-info">
+                See your independent notes
               </Link>
             </div>
           </div>

@@ -25,7 +25,7 @@ export async function GET() {
         chaptersverses: true,
         notes: true,
       },
-      orderBy: { id: "desc" },
+      orderBy: { createdAt: "desc" },
     });
 
     if (!books || books.length === 0) throw new Error();

@@ -28,13 +28,13 @@ export async function POST(req) {
       data: {
         chapter: chapter,
         verses: verse,
-        bookId: parseInt(bookId),
+        bookId: bookId, //parseInt(bookId),
       },
     });
 
     const prismachapters = await prisma.ChaptersVerses.findFirst({
       where: {
-        AND: [{ bookId: parseInt(bookId), chapter: chapter, verses: verse }],
+        AND: [{ bookId: bookId, chapter: chapter, verses: verse }],
       },
     });
 
@@ -42,7 +42,7 @@ export async function POST(req) {
       data: {
         text: note,
         chaptersversesId: prismachapters.id,
-        bookId: parseInt(bookId),
+        bookId: bookId,
       },
     });
 

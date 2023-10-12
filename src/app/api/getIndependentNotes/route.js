@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "../auth/[...nextauth]/route";
 import { getUser } from "@/services/api";
 import { prisma } from "@/db";
 
-export async function GET(req, { params }) {
+export async function GET() {
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -15,24 +15,18 @@ export async function GET(req, { params }) {
   }
 
   try {
-    const bookId = params.bookId; //parseInt(params.bookId);
-
     const user = await getUser(session.user.email);
 
-    const book = await prisma.Book.findFirst({
-      where: { AND: [{ id: bookId, userId: user.id }] },
-      include: {
-        chaptersverses: { orderBy: { createdAt: "desc" } },
-        // orderBy: { id: "desc" },
-        notes: { orderBy: { createdAt: "desc" } },
-        //orderBy: { id: "desc" },
+    const independentNotes = await prisma.IndependentNotes.findMany({
+      where: {
+        userId: user.id,
       },
       orderBy: { createdAt: "desc" },
     });
 
-    if (!book) throw new Error();
+    if (!independentNotes || independentNotes.length === 0) throw new Error();
 
-    return NextResponse.json(book, { status: 200 });
+    return NextResponse.json(independentNotes, { status: 200 });
   } catch (error) {
     return NextResponse.json({ message: "Error!" }, { status: 404 });
   }
