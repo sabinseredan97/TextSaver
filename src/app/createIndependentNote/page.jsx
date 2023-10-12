@@ -45,7 +45,7 @@ export default function Page() {
 
   return (
     <form onSubmit={(e) => handleSubmit(e)}>
-      <div className="form-group row">
+      <div className="form-group row mb-1">
         <label htmlFor="title" className="col-sm-2 col-form-label">
           Title
         </label>
@@ -62,7 +62,7 @@ export default function Page() {
         </div>
       </div>
 
-      <div className="form-group row">
+      <div className="form-group row mb-1">
         <label htmlFor="note" className="col-sm-2 col-form-label">
           Note
         </label>
@@ -72,7 +72,7 @@ export default function Page() {
             name="note"
             className="form-control"
             id="note"
-            rows={3}
+            rows={17}
             placeholder="Note"
             value={data.note}
           />

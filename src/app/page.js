@@ -64,7 +64,8 @@ export default async function Home() {
             <div className="card-body">
               <h5 className="card-title">My Independent Notes</h5>
               <p className="card-text">
-                Here you can see you Independent Notes
+                Here you can see you Independent Notes, click on a note and you
+                can delete it or edit it.
               </p>
               <Link href="/myIndependentNotes" className="btn btn-info">
                 See your independent notes

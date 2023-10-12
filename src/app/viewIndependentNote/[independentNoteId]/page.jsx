@@ -112,7 +112,7 @@ export default function Page() {
                 <textarea
                   readOnly={editNote}
                   className="card-text form-control"
-                  rows={isMobile ? 3 : 5}
+                  rows={isMobile ? 17 : 27}
                   defaultValue={data.text}
                   ref={textareaRef}
                 />

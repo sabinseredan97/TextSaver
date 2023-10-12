@@ -42,7 +42,7 @@ export default function NavBar() {
               <Link
                 //as={Link}
                 className="btn btn-outline-dark ms-2 me-2"
-                href="/myIndepenentNotes"
+                href="/myIndependentNotes"
               >
                 My Independent Notes
               </Link>
