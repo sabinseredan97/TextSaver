@@ -12,6 +12,7 @@ export default function Page() {
   const noteId = decodeURIComponent(params.noteId);
   var editedNote = "";
   const [editNote, setEditNote] = useState(true);
+  const [loading, setLoading] = useState(false);
   const textareaRef = useRef();
 
   const { data, isLoading, isError, refetch } = useQuery({
@@ -45,6 +46,7 @@ export default function Page() {
     editedNote = textareaRef.current.value;
     try {
       if (editedNote === "") throw new Error("Note cannot be empty!");
+      setLoading(true);
       const response = await fetch(`/api/editNote`, {
         method: "POST",
         body: JSON.stringify({ noteId, editedNote }),
@@ -54,11 +56,13 @@ export default function Page() {
       toast.warn(error.message);
     } finally {
       setEditNote(!editNote);
+      setLoading(false);
     }
   }
 
   async function deleteNote() {
     try {
+      setLoading(true);
       const response = await fetch(`/api/delete/note/${noteId}`, {
         method: "DELETE",
       });
@@ -67,6 +71,7 @@ export default function Page() {
         refetch();
       }
     } catch (error) {
+      setLoading(false);
       toast.error("A error occured!");
     }
   }
@@ -121,11 +126,16 @@ export default function Page() {
                   <button
                     onClick={saveEditedNote}
                     className="btn btn-primary me-2"
+                    disabled={loading}
                   >
                     Save Note
                   </button>
                 )}
-                <button onClick={deleteNote} className="btn btn-danger me-2">
+                <button
+                  onClick={deleteNote}
+                  disabled={loading}
+                  className="btn btn-danger me-2"
+                >
                   Delete Note
                 </button>
               </div>

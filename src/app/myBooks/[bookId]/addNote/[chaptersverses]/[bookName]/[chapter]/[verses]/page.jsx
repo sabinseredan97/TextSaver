@@ -9,6 +9,7 @@ export default function Page() {
   const bookName = params.bookName;
   const chapter = params.chapter;
   const verses = params.verses;
+  const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState({
     bookId: params.bookId,
     chaptersversesId: params.chaptersverses,
@@ -39,6 +40,7 @@ export default function Page() {
     e.preventDefault();
     try {
       if (data.note === "") throw new Error("Please add a note");
+      setIsLoading(true);
       const response = await fetch(`/api/addNote`, {
         method: "POST",
         body: JSON.stringify(data),
@@ -50,6 +52,8 @@ export default function Page() {
       });
     } catch (error) {
       toast.warn(error.message);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -117,7 +121,11 @@ export default function Page() {
         </div>
       </div>
       <div className="text-center mt-2">
-        <button onClick={(e) => handleSubmit(e)} className="btn btn-secondary">
+        <button
+          onClick={(e) => handleSubmit(e)}
+          disabled={isLoading}
+          className="btn btn-secondary"
+        >
           Submit
         </button>
       </div>

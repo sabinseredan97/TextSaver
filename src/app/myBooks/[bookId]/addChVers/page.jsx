@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 
 export default function Page() {
   const params = useParams();
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
     bookId: params.bookId,
     chapter: "",
@@ -47,9 +48,10 @@ export default function Page() {
   async function handleSubmit(e) {
     e.preventDefault();
     try {
-      if (data.chapter === "" && data.note === "")
+      if (data.chapter === "" || data.note === "")
         throw new Error("Fill the empty fields");
       if (data.verse === "") setData({ ...data, verse: null });
+      setLoading(true);
       const response = await fetch(`/api/addChVerse`, {
         method: "POST",
         body: JSON.stringify(data),
@@ -58,6 +60,8 @@ export default function Page() {
       if (response.status === 201) toast.success("Added!");
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -172,6 +176,7 @@ export default function Page() {
                 <button
                   onClick={(e) => handleSubmit(e)}
                   className="btn btn-secondary"
+                  disabled={loading}
                 >
                   Submit
                 </button>

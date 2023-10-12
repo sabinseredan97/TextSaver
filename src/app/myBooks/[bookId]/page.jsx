@@ -94,7 +94,7 @@ export default function Page() {
                   >
                     New Chapter/s and Verse/s
                   </Link>
-                  <button className="btn btn-danger" onClick={deleteBook}>
+                  <button className="btn btn-danger mb-1" onClick={deleteBook}>
                     Delete Book
                   </button>
                 </div>

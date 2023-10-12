@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { toast } from "react-toastify";
 
 export default function Page() {
+  const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState({
     book: "",
     chapter: "",
@@ -30,6 +31,7 @@ export default function Page() {
     try {
       if (data.book === "" || data.chapter === "" || data.note === "")
         throw new Error("Fill the empty fields");
+      setIsLoading(true);
       if (data.verse === "") setData({ ...data, verse: null });
 
       const response = await fetch(`/api/new`, {
@@ -45,6 +47,8 @@ export default function Page() {
       if (response.status === 201) toast.success("Created!");
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -118,7 +122,11 @@ export default function Page() {
         </div>
       </div>
       <div className="text-center mt-2">
-        <button type="submit" className="btn btn-secondary">
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="btn btn-secondary"
+        >
           Submit
         </button>
       </div>

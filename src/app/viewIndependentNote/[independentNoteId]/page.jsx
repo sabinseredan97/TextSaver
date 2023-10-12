@@ -8,6 +8,7 @@ import { Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
 
 export default function Page() {
+  const [loading, setLoading] = useState(false);
   const [editNote, setEditNote] = useState(true);
   const params = useParams();
   const independentNoteId = decodeURIComponent(params.independentNoteId);
@@ -52,6 +53,7 @@ export default function Page() {
     editedNote = textareaRef.current.value;
     try {
       if (editedNote === "") throw new Error("Note cannot be empty!");
+      setLoading(true);
       const response = await fetch(`/api/editNote/independentNote`, {
         method: "POST",
         body: JSON.stringify({ independentNoteId, editedNote }),
@@ -61,11 +63,13 @@ export default function Page() {
       toast.warn(error.message);
     } finally {
       setEditNote(!editNote);
+      setLoading(false);
     }
   }
 
   async function deleteNote() {
     try {
+      setLoading(true);
       const response = await fetch(
         `/api/delete/independentNotes/${encodeURIComponent(independentNoteId)}`,
         {
@@ -77,6 +81,7 @@ export default function Page() {
         refetch();
       }
     } catch (error) {
+      setLoading(false);
       toast.error("A error occured!");
     }
   }
@@ -124,11 +129,16 @@ export default function Page() {
                     <button
                       onClick={saveEditedNote}
                       className="btn btn-primary me-2"
+                      disabled={loading}
                     >
                       Save Note
                     </button>
                   )}
-                  <button onClick={deleteNote} className="btn btn-danger me-2">
+                  <button
+                    onClick={deleteNote}
+                    disabled={loading}
+                    className="btn btn-danger me-2"
+                  >
                     Delete Note
                   </button>
                 </div>
