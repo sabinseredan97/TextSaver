@@ -35,8 +35,6 @@ export default function Page() {
     return <div className="text-center">Unauthorised</div>;
   }
 
-  const isMobile = window.innerWidth < 1200 ? true : false;
-
   function onChange(e) {
     e.preventDefault();
     setSearchInput(e.target.value);
@@ -45,32 +43,21 @@ export default function Page() {
   async function deleteBook() {
     try {
       setIsDeleting(true);
-      await fetch(`/api/delete/book/${decodeURIComponent(bookId)}`, {
-        method: "DELETE",
-      });
-      queryClient.cancelQueries([`book-${decodeURIComponent(bookId)}`]);
-      refetch();
+      const response = await fetch(
+        `/api/delete/book/${decodeURIComponent(bookId)}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (response.status === 200) {
+        queryClient.cancelQueries([`book-${decodeURIComponent(bookId)}`]);
+        refetch();
+        toast.success("Book deleted!");
+      }
     } catch (error) {
       toast.error("A error occured!");
     } finally {
       setIsDeleting(false);
-      toast.success("Book deleted!");
-    }
-  }
-
-  async function deleteChapter(chaptersVersesId) {
-    try {
-      setIsDeleting(true);
-      await fetch(`/api/delete/chaptersVerses/${chaptersVersesId}`, {
-        method: "DELETE",
-      });
-      queryClient.cancelQueries([`book-${decodeURIComponent(bookId)}`]);
-      refetch();
-    } catch (error) {
-      toast.error("A error occured!");
-    } finally {
-      setIsDeleting(false);
-      toast.success("Chapter & Verse/s Deleted!");
     }
   }
 
@@ -107,6 +94,7 @@ export default function Page() {
                   <button
                     className="btn btn-danger mb-1 me-1"
                     onClick={deleteBook}
+                    disabled={isDeleting}
                   >
                     Delete Book
                   </button>
@@ -142,64 +130,12 @@ export default function Page() {
                           <h6 className="card-subtitle mb-2 text-muted">
                             Verse/s: {item.verses}
                           </h6>
-                          <button
-                            className="btn btn-outline-danger mb-2 me-1"
-                            onClick={() => deleteChapter(item.id)}
-                          >
-                            Delete Chapter & Verse
-                          </button>
                           <Link
-                            href={`${encodeURIComponent(
-                              data.id
-                            )}/editChapterVerses/${item.id}`}
-                            className="btn btn-outline-warning mb-2 me-1"
+                            href={`/viewChapterVerses/${data.id}/${item.id}`}
+                            className="btn btn-outline-warning"
                           >
-                            Edit Chapter & Verse
+                            View Chapter & Notes
                           </Link>
-                          <Link
-                            href={`/myBooks/${
-                              data.id
-                            }/addNote/${encodeURIComponent(
-                              item.id
-                            )}/${encodeURIComponent(
-                              data.name
-                            )}/${encodeURIComponent(
-                              item.chapter
-                            )}/${encodeURIComponent(
-                              item.verses ? item.verses : null
-                            )}`}
-                            className="card-link btn btn-outline-success mb-2"
-                          >
-                            Add Note
-                          </Link>
-                          <h6 className="card mb-2 mt-2">Notes</h6>
-                          {data.notes
-                            .filter((note) => item.id === note.chaptersversesId)
-                            .map((filteredNote) => {
-                              return (
-                                <div
-                                  className="card mb-2 text-center"
-                                  key={filteredNote.id}
-                                >
-                                  <textarea
-                                    readOnly
-                                    className="card-text form-control"
-                                    rows={isMobile ? 3 : 5}
-                                    value={filteredNote.text}
-                                  />
-                                  <div className="text-center mt-1 mb-1">
-                                    <Link
-                                      href={`/viewNote/${encodeURIComponent(
-                                        filteredNote.id
-                                      )}`}
-                                      className="card-link btn btn-dark"
-                                    >
-                                      View Note
-                                    </Link>
-                                  </div>
-                                </div>
-                              );
-                            })}
                         </div>
                       </div>
                     );

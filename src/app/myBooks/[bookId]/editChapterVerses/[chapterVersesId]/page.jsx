@@ -19,9 +19,9 @@ export default function Page() {
     queryKey: [`book-chVs-${chapterVersesId}`],
     queryFn: () =>
       fetch(
-        `/api/get/bookById/${encodeURIComponent(bookId)}/${encodeURIComponent(
-          chapterVersesId
-        )}`,
+        `/api/get/chapterVersesById/${encodeURIComponent(
+          bookId
+        )}/${encodeURIComponent(chapterVersesId)}`,
         {
           method: "GET",
         }
@@ -92,6 +92,7 @@ export default function Page() {
       </div>
     );
   }
+
   return (
     <>
       {!content ? (

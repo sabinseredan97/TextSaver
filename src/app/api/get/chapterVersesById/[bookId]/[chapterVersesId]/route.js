@@ -15,20 +15,19 @@ export async function GET(req, { params }) {
   }
 
   try {
-    const { bookId, chaptersVersesId } = params; //parseInt(params.noteId);
+    const { bookId, chapterVersesId } = params; //parseInt(params.noteId);
 
     const user = await getUser(session.user.email);
 
     const book = await prisma.Book.findFirst({
       where: { AND: [{ id: bookId, userId: user.Id }] },
       include: {
-        chaptersverses: { where: { id: chaptersVersesId } },
-        // orderBy: { id: "desc" },
+        chaptersverses: { where: { id: chapterVersesId } },
+        notes: { where: { chaptersversesId: chapterVersesId } },
       },
-      //orderBy: { chaptersversets: { id: "desc" } },
     });
 
-    if (!book) throw new Error();
+    if (!book || book.chaptersverses.length < 1) throw new Error();
 
     /* const chaptersVerses = await prisma.ChaptersVerses.findUnique({
       where: { id: chaptersVersesId },
