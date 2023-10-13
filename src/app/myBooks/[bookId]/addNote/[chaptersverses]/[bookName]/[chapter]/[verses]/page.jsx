@@ -76,7 +76,7 @@ export default function Page() {
         </div>
       </div>
 
-      <div className="form-group row">
+      <div className="form-group row mt-1">
         <label htmlFor="chapter" className="col-sm-2 col-form-label">
           Chapter/s & Verse/s
         </label>
@@ -99,7 +99,7 @@ export default function Page() {
         </div>
       </div>
 
-      <div className="form-group row">
+      <div className="form-group row mt-1">
         <label htmlFor="note" className="col-sm-2 col-form-label">
           Note
         </label>

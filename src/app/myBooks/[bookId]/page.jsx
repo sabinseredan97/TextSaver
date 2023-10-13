@@ -58,6 +58,22 @@ export default function Page() {
     }
   }
 
+  async function deleteChapter(chaptersVersesId) {
+    try {
+      setIsDeleting(true);
+      await fetch(`/api/delete/chaptersVerses/${chaptersVersesId}`, {
+        method: "DELETE",
+      });
+      queryClient.cancelQueries([`book-${decodeURIComponent(bookId)}`]);
+      refetch();
+    } catch (error) {
+      toast.error("A error occured!");
+    } finally {
+      setIsDeleting(false);
+      toast.success("Chapter & Verse/s Deleted!");
+    }
+  }
+
   let content;
   if (isLoading || isDeleting) {
     content = (
@@ -88,26 +104,25 @@ export default function Page() {
               <div className="card-body">
                 <h5 className="card-title">{data.name}</h5>
                 <div className="text-center">
+                  <button className="btn btn-danger mb-1 me-1" onClick={deleteBook}>
+                    Delete Book
+                  </button>
                   <Link
                     href={`/myBooks/${data.id}/addChVers`}
-                    className="card-link btn btn-success me-1 mb-1"
+                    className="card-link btn btn-success mb-1"
                   >
                     New Chapter/s and Verse/s
                   </Link>
-                  <button className="btn btn-danger mb-1" onClick={deleteBook}>
-                    Delete Book
-                  </button>
                 </div>
 
                 <input
-                  type="number"
+                  type="text"
                   className="form-control mr-sm-2 mb-2 mt-1"
                   placeholder="Search for a chapter"
                   aria-label="Search"
                   onChange={onChange}
                   value={searchInput}
                 />
-
                 {data.chaptersverses
                   .filter((chapter) => {
                     return searchInput === ""
@@ -124,7 +139,12 @@ export default function Page() {
                           <h6 className="card-subtitle mb-2 text-muted">
                             Verse/s: {item.verses}
                           </h6>
-                          <h6 className="card mb-2 mt-2">Notes</h6>
+                          <button
+                            className="btn btn-danger mb-2 me-1"
+                            onClick={() => deleteChapter(item.id)}
+                          >
+                            Delete Chapter & Verse
+                          </button>
                           <Link
                             href={`/myBooks/${
                               data.id
@@ -141,6 +161,7 @@ export default function Page() {
                           >
                             Add Note
                           </Link>
+                          <h6 className="card mb-2 mt-2">Notes</h6>
                           {data.notes
                             .filter((note) => item.id === note.chaptersversesId)
                             .map((filteredNote) => {
