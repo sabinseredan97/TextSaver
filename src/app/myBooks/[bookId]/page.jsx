@@ -18,7 +18,7 @@ export default function Page() {
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: [`book-${decodeURIComponent(bookId)}`],
     queryFn: () =>
-      fetch(`/api/getBookById/${decodeURIComponent(bookId)}`, {
+      fetch(`/api/get/bookById/${decodeURIComponent(bookId)}`, {
         method: "GET",
       }).then((res) => res.json()),
   });
@@ -104,7 +104,10 @@ export default function Page() {
               <div className="card-body">
                 <h5 className="card-title">{data.name}</h5>
                 <div className="text-center">
-                  <button className="btn btn-danger mb-1 me-1" onClick={deleteBook}>
+                  <button
+                    className="btn btn-danger mb-1 me-1"
+                    onClick={deleteBook}
+                  >
                     Delete Book
                   </button>
                   <Link
@@ -140,11 +143,19 @@ export default function Page() {
                             Verse/s: {item.verses}
                           </h6>
                           <button
-                            className="btn btn-danger mb-2 me-1"
+                            className="btn btn-outline-danger mb-2 me-1"
                             onClick={() => deleteChapter(item.id)}
                           >
                             Delete Chapter & Verse
                           </button>
+                          <Link
+                            href={`${encodeURIComponent(
+                              data.id
+                            )}/editChapterVerses/${item.id}`}
+                            className="btn btn-outline-warning mb-2 me-1"
+                          >
+                            Edit Chapter & Verse
+                          </Link>
                           <Link
                             href={`/myBooks/${
                               data.id
@@ -157,7 +168,7 @@ export default function Page() {
                             )}/${encodeURIComponent(
                               item.verses ? item.verses : null
                             )}`}
-                            className="card-link btn btn-success mb-2"
+                            className="card-link btn btn-outline-success mb-2"
                           >
                             Add Note
                           </Link>

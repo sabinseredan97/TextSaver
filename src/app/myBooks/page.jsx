@@ -13,7 +13,7 @@ export default function Page() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["myBooks"],
     queryFn: () =>
-      fetch(`/api/getBooks`, {
+      fetch("/api/get/allBooks", {
         method: "GET",
       }).then((res) => res.json()),
   });
@@ -89,7 +89,7 @@ export default function Page() {
                           <h5 className="card-title">{item.name}</h5>
                           <Link
                             href={`myBooks/${encodeURIComponent(item.id)}`}
-                            className="card-link btn btn-info me-1"
+                            className="card-link btn btn-outline-dark me-1"
                           >
                             View
                           </Link>

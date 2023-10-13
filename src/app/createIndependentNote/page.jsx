@@ -30,7 +30,7 @@ export default function Page() {
       if (data.title === "" || data.note === "")
         throw new Error("Fill the empty fields");
       setIsLoading(true);
-      const response = await fetch(`/api/addIndependentNote`, {
+      const response = await fetch("/api/new/addIndependentNote", {
         method: "POST",
         body: JSON.stringify(data),
       });

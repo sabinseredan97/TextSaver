@@ -13,7 +13,7 @@ export default function Page() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["myIndependentNotes"],
     queryFn: () =>
-      fetch(`/api/getIndependentNotes`, {
+      fetch(`/api/get/independentNotes`, {
         method: "GET",
       }).then((res) => res.json()),
   });
@@ -99,7 +99,7 @@ export default function Page() {
                             href={`viewIndependentNote/${encodeURIComponent(
                               item.id
                             )}`}
-                            className="card-link btn btn-info me-1 mt-1"
+                            className="card-link btn btn-outline-dark me-1 mt-1"
                           >
                             View
                           </Link>

@@ -19,7 +19,7 @@ export default function Page() {
     queryKey: [`myIndependentNotes-${independentNoteId}`],
     queryFn: () =>
       fetch(
-        `/api/getIndependentNoteById/${encodeURIComponent(independentNoteId)}`,
+        `/api/get/independentNoteById/${encodeURIComponent(independentNoteId)}`,
         {
           method: "GET",
         }
@@ -54,7 +54,7 @@ export default function Page() {
     try {
       if (editedNote === "") throw new Error("Note cannot be empty!");
       setLoading(true);
-      const response = await fetch(`/api/editNote/independentNote`, {
+      const response = await fetch("/api/edit/independentNote", {
         method: "POST",
         body: JSON.stringify({ independentNoteId, editedNote }),
       });

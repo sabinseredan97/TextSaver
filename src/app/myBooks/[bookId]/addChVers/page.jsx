@@ -24,7 +24,7 @@ export default function Page() {
   } = useQuery({
     queryKey: [`book-${decodeURIComponent(data.bookId)}`],
     queryFn: () =>
-      fetch(`/api/getBookById/${decodeURIComponent(data.bookId)}`, {
+      fetch(`/api/get/bookById/${decodeURIComponent(data.bookId)}`, {
         method: "GET",
       }).then((res) => res.json()),
   });
@@ -52,7 +52,7 @@ export default function Page() {
         throw new Error("Fill the empty fields");
       if (data.verse === "") setData({ ...data, verse: null });
       setLoading(true);
-      const response = await fetch(`/api/addChVerse`, {
+      const response = await fetch("/api/new/addChVerse", {
         method: "POST",
         body: JSON.stringify(data),
       });
@@ -107,7 +107,7 @@ export default function Page() {
                 </div>
               </div>
 
-              <div className="form-group row">
+              <div className="form-group row mt-1">
                 <label htmlFor="chapter" className="col-sm-2 col-form-label">
                   Chapter/s
                 </label>
@@ -129,7 +129,7 @@ export default function Page() {
                 </div>
               </div>
 
-              <div className="form-group row">
+              <div className="form-group row mt-1">
                 <label htmlFor="verse" className="col-sm-2 col-form-label">
                   Verse/s
                 </label>
@@ -151,7 +151,7 @@ export default function Page() {
                 </div>
               </div>
 
-              <div className="form-group row">
+              <div className="form-group row mt-1">
                 <label htmlFor="note" className="col-sm-2 col-form-label">
                   Note
                 </label>

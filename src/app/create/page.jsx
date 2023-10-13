@@ -34,7 +34,7 @@ export default function Page() {
       setIsLoading(true);
       if (data.verse === "") setData({ ...data, verse: null });
 
-      const response = await fetch(`/api/new`, {
+      const response = await fetch("/api/new/book", {
         method: "POST",
         body: JSON.stringify(data),
       });

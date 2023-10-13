@@ -18,7 +18,7 @@ export default function Page() {
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: [`note-${noteId}`],
     queryFn: () =>
-      fetch(`/api/getNoteById/${noteId}`, {
+      fetch(`/api/get/noteById/${noteId}`, {
         method: "GET",
       }).then((res) => res.json()),
   });
@@ -47,7 +47,7 @@ export default function Page() {
     try {
       if (editedNote === "") throw new Error("Note cannot be empty!");
       setLoading(true);
-      const response = await fetch(`/api/editNote`, {
+      const response = await fetch("/api/edit/note", {
         method: "POST",
         body: JSON.stringify({ noteId, editedNote }),
       });

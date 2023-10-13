@@ -41,7 +41,7 @@ export default function Page() {
     try {
       if (data.note === "") throw new Error("Please add a note");
       setIsLoading(true);
-      const response = await fetch(`/api/addNote`, {
+      const response = await fetch("/api/new/addNote", {
         method: "POST",
         body: JSON.stringify(data),
       });

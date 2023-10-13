@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../auth/[...nextauth]/route";
+import { getUser } from "@/services/api";
 import { prisma } from "@/db";
 
-export async function GET(req, { params }) {
+export async function GET() {
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -14,15 +15,18 @@ export async function GET(req, { params }) {
   }
 
   try {
-    const independentNoteId = params.independentNoteId; //parseInt(params.noteId);
+    const user = await getUser(session.user.email);
 
-    const note = await prisma.IndependentNotes.findUnique({
-      where: { id: independentNoteId },
+    const independentNotes = await prisma.IndependentNotes.findMany({
+      where: {
+        userId: user.id,
+      },
+      orderBy: { createdAt: "desc" },
     });
 
-    if (!note) throw new Error();
+    if (!independentNotes || independentNotes.length === 0) throw new Error();
 
-    return NextResponse.json(note, { status: 200 });
+    return NextResponse.json(independentNotes, { status: 200 });
   } catch (error) {
     return NextResponse.json({ message: "Error!" }, { status: 404 });
   }
