@@ -9,9 +9,9 @@ export default function Page() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
 
-  const { data: session } = useSession();
+  const session = useSession();
 
-  if (session) {
+  if (session.status === "authenticated") {
     redirect("/");
   }
 

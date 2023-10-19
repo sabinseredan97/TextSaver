@@ -32,20 +32,14 @@ export default function Page() {
     verses: data?.chaptersverses[0].verses,
   });
 
-  const { data: session } = useSession({
-    required: true,
-    onUnauthenticated() {
-      redirect(
-        `/login?callbackUrl=/myBooks/${encodeURIComponent(
-          data.id
-        )}/editChapterVerses/${encodeURIComponent(data.chaptersverses[0].id)}`
-      );
-    },
-  });
+  const session = useSession();
 
-  if (!session) {
-    //redirect("/login?callbackUrl=/create");
-    return <div className="text-center">Unauthorised</div>;
+  if (session.status === "unauthenticated") {
+    redirect(
+      `/login?callbackUrl=/myBooks/${encodeURIComponent(
+        data.id
+      )}/editChapterVerses/${encodeURIComponent(data.chaptersverses[0].id)}`
+    );
   }
 
   function enalbeEdit() {

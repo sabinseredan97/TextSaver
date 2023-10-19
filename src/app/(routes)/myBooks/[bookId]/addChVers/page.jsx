@@ -29,20 +29,12 @@ export default function Page() {
       }).then((res) => res.json()),
   });
 
-  const { data: session } = useSession({
-    required: true,
-    onUnauthenticated() {
-      redirect(
-        `/login?callbackUrl=/myBooks/${encodeURIComponent(
-          data.bookId
-        )}/addChVers`
-      );
-    },
-  });
+  const session = useSession();
 
-  if (!session) {
-    //redirect("/login?callbackUrl=/create");
-    return <div className="text-center">Unauthorised</div>;
+  if (session.status === "unauthenticated") {
+    redirect(
+      `/login?callbackUrl=/myBooks/${encodeURIComponent(data.bookId)}/addChVers`
+    );
   }
 
   async function handleSubmit(e) {

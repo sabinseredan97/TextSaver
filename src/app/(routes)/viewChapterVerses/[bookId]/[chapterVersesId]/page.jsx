@@ -14,7 +14,7 @@ export default function Page() {
   const chapterVersesId = decodeURIComponent(params.chapterVersesId);
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
-  const isMobile = window.innerWidth < 1200 ? true : false;
+  let isMobile;
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: [`book-${bookId}-${chapterVersesId}`],
@@ -70,7 +70,7 @@ export default function Page() {
   }
 
   let content;
-  if (isLoading || isDeleting || session.status === "loading") {
+  if (isLoading || isDeleting) {
     content = (
       <div className="mt-5 text-center">
         <Spinner animation="grow" variant="primary" />
@@ -87,6 +87,10 @@ export default function Page() {
         Nothing Found
       </div>
     );
+  }
+
+  if (typeof window !== "undefined") {
+    isMobile = window.innerWidth < 1200 ? true : false;
   }
 
   return (

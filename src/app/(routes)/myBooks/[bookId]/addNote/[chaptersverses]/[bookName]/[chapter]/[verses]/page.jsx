@@ -16,24 +16,18 @@ export default function Page() {
     note: "",
   });
 
-  const { data: session } = useSession({
-    required: true,
-    onUnauthenticated() {
-      redirect(
-        `/login?callbackUrl=/myBooks/${encodeURIComponent(
-          data.bookId
-        )}/addNote/${encodeURIComponent(
-          data.chaptersversesId
-        )}/${encodeURIComponent(bookName)}/${encodeURIComponent(
-          chapter
-        )}/${encodeURIComponent(verses)}`
-      );
-    },
-  });
+  const session = useSession();
 
-  if (!session) {
-    //redirect("/login?callbackUrl=/create");
-    return <div className="text-center">Unauthorised</div>;
+  if (session.status === "unauthenticated") {
+    redirect(
+      `/login?callbackUrl=/myBooks/${encodeURIComponent(
+        data.bookId
+      )}/addNote/${encodeURIComponent(
+        data.chaptersversesId
+      )}/${encodeURIComponent(bookName)}/${encodeURIComponent(
+        chapter
+      )}/${encodeURIComponent(verses)}`
+    );
   }
 
   async function handleSubmit(e) {
