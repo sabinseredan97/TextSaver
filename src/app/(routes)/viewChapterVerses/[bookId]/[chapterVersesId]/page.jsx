@@ -14,6 +14,7 @@ export default function Page() {
   const chapterVersesId = decodeURIComponent(params.chapterVersesId);
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
+  const isMobile = window.innerWidth < 1200 ? true : false;
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: [`book-${bookId}-${chapterVersesId}`],
@@ -28,19 +29,24 @@ export default function Page() {
       ).then((res) => res.json()),
   });
 
-  const { data: session } = useSession({
+  /* const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
       redirect(`/login?callbackUrl=/myBooks/${encodeURIComponent(bookId)}`);
     },
-  });
+  }); */
 
-  if (!session) {
+  const session = useSession();
+
+  if (session.status === "unauthenticated") {
     //redirect("/login?callbackUrl=/create");
-    return <div className="text-center">Unauthorised</div>;
+    //return <div className="text-center">Unauthorised</div>;
+    redirect(
+      `/login?callbackUrl=/viewChapterVerses/${encodeURIComponent(
+        bookId
+      )}/${encodeURIComponent(chapterVersesId)}`
+    );
   }
-
-  const isMobile = window.innerWidth < 1200 ? true : false;
 
   async function deleteChapter() {
     try {
@@ -64,7 +70,7 @@ export default function Page() {
   }
 
   let content;
-  if (isLoading || isDeleting) {
+  if (isLoading || isDeleting || session.status === "loading") {
     content = (
       <div className="mt-5 text-center">
         <Spinner animation="grow" variant="primary" />

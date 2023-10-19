@@ -18,16 +18,12 @@ export default function Page() {
       }).then((res) => res.json()),
   });
 
-  const { data: session } = useSession({
-    required: true,
-    onUnauthenticated() {
-      redirect(`/login?callbackUrl=/myBooks`);
-    },
-  });
+  const session = useSession();
 
-  if (!session) {
+  if (session.status === "unauthenticated") {
     //redirect("/login?callbackUrl=/create");
-    return <div className="text-center">Unauthorised</div>;
+    //return <div className="text-center">Unauthorised</div>;
+    redirect("/login?callbackUrl=/create");
   }
 
   function onChange(e) {
@@ -36,7 +32,7 @@ export default function Page() {
   }
 
   let content;
-  if (isLoading) {
+  if (isLoading || session.status === "loading") {
     content = (
       <div className="mt-5 text-center">
         <Spinner animation="grow" variant="primary" />

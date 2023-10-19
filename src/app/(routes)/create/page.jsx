@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { toast } from "react-toastify";
+import { Spinner } from "react-bootstrap";
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,16 +15,22 @@ export default function Page() {
     note: "",
   });
 
-  const { data: session } = useSession({
-    required: true,
-    onUnauthenticated() {
-      redirect("/login?callbackUrl=/create");
-    },
-  });
+  const session = useSession();
 
-  if (!session) {
+  if (session.status === "loading") {
+    return (
+      <div className="mt-5 text-center">
+        <Spinner animation="grow" variant="primary" />
+        <Spinner animation="grow" variant="warning" />
+        <Spinner animation="grow" variant="danger" />
+      </div>
+    );
+  }
+
+  if (session.status === "unauthenticated") {
     //redirect("/login?callbackUrl=/create");
-    return <div className="text-center">Unauthorised</div>;
+    //return <div className="text-center">Unauthorised</div>;
+    redirect("/login?callbackUrl=/create");
   }
 
   async function handleSubmit(e) {

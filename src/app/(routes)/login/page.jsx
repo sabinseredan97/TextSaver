@@ -26,7 +26,7 @@ export default function Page() {
         <div className="text-center sm:rounded-5xl -mx-4 mt-10 flex-auto bg-white px-5 py-1 shadow-2xl shadow-gray-900/10 sm:mx-0 sm:flex-none sm:p-24">
           <button
             className="btn btn-primary"
-            onClick={async () => await signIn("google")}
+            onClick={async () => await signIn("google", { callbackUrl })}
           >
             <svg
               aria-hidden="true"
