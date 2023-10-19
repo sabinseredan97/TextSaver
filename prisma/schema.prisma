@@ -6,8 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 model User {
@@ -39,6 +40,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
@@ -47,6 +49,8 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model VerificationToken {
@@ -66,7 +70,9 @@ model Book {
   chaptersverses ChaptersVerses[]
   notes          Notes[]
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model ChaptersVerses {
@@ -78,7 +84,9 @@ model ChaptersVerses {
   updatedAt DateTime @updatedAt
   notes     Notes[]
 
-  book Book @relation(fields: [bookId], references: [id])
+  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@index([bookId])
 }
 
 model Notes {
@@ -89,8 +97,12 @@ model Notes {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  book           Book           @relation(fields: [bookId], references: [id])
-  chaptersVerses ChaptersVerses @relation(fields: [chaptersversesId], references: [id])
+  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  chaptersVerses ChaptersVerses @relation(fields: [chaptersversesId], references: [id], onDelete: Cascade)
+
+  @@index([bookId])
+  @@index([chaptersversesId])
 }
 
 model IndependentNotes {
@@ -101,5 +113,7 @@ model IndependentNotes {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
