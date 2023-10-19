@@ -9,6 +9,7 @@ import { Spinner } from "react-bootstrap";
 
 export default function Page() {
   const [searchInput, setSearchInput] = useState("");
+  let isMobile;
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["myIndependentNotes"],
@@ -23,8 +24,6 @@ export default function Page() {
   if (session.status === "unauthenticated") {
     redirect(`/login?callbackUrl=/myIndependentNotes`);
   }
-
-  const isMobile = window.innerWidth < 1200 ? true : false;
 
   function onChange(e) {
     e.preventDefault();
@@ -49,6 +48,10 @@ export default function Page() {
         Nothing Found
       </div>
     );
+  }
+
+  if (typeof window !== "undefined") {
+    isMobile = window.innerWidth < 1200 ? true : false;
   }
 
   return (

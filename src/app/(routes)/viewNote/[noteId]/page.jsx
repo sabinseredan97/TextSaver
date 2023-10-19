@@ -14,6 +14,7 @@ export default function Page() {
   const [editNote, setEditNote] = useState(true);
   const [loading, setLoading] = useState(false);
   const textareaRef = useRef();
+  let isMobile;
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: [`note-${noteId}`],
@@ -28,8 +29,6 @@ export default function Page() {
   if (session.status === "unauthenticated") {
     redirect(`/login?callbackUrl=/viewNote/${encodeURIComponent(noteId)}`);
   }
-
-  const isMobile = window.innerWidth < 1200 ? true : false;
 
   function enalbeEdit() {
     setEditNote(!editNote);
@@ -88,6 +87,10 @@ export default function Page() {
         Nothing Found
       </div>
     );
+  }
+
+  if (typeof window !== "undefined") {
+    isMobile = window.innerWidth < 1200 ? true : false;
   }
 
   return (

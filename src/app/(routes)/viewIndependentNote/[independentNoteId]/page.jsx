@@ -14,6 +14,7 @@ export default function Page() {
   const independentNoteId = decodeURIComponent(params.independentNoteId);
   const textareaRef = useRef();
   var editedNote = "";
+  let isMobile;
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: [`myIndependentNotes-${independentNoteId}`],
@@ -35,8 +36,6 @@ export default function Page() {
       )}`
     );
   }
-
-  const isMobile = window.innerWidth < 1200 ? true : false;
 
   function enalbeEdit() {
     setEditNote(!editNote);
@@ -98,6 +97,10 @@ export default function Page() {
         Nothing Found
       </div>
     );
+  }
+
+  if (typeof window !== "undefined") {
+    isMobile = window.innerWidth < 1200 ? true : false;
   }
 
   return (
