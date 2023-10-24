@@ -25,6 +25,7 @@ export default async function Home() {
       <Card className="mb-2">
         <CardHeader>
           <CardTitle>Add Book</CardTitle>
+          <Separator />
         </CardHeader>
         <CardContent>
           <p className="text-lg">
@@ -42,6 +43,7 @@ export default async function Home() {
       <Card className="mb-2">
         <CardHeader>
           <CardTitle>My Books</CardTitle>
+          <Separator />
         </CardHeader>
         <CardContent>
           <p className="text-lg">
@@ -58,6 +60,7 @@ export default async function Home() {
       <Card className="mb-2">
         <CardHeader>
           <CardTitle>Add Independent Note</CardTitle>
+          <Separator />
         </CardHeader>
         <CardContent>
           <p className="text-lg">
@@ -74,6 +77,7 @@ export default async function Home() {
       <Card className="mb-2">
         <CardHeader>
           <CardTitle>My Independent Notes</CardTitle>
+          <Separator />
         </CardHeader>
         <CardContent>
           <p className="text-lg">
