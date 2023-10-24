@@ -6,12 +6,9 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { useState } from "react";
-import { Spinner } from "react-bootstrap";
-
 import { Textarea } from "@/components/ui/textarea";
 import { CheckIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -22,10 +19,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
 import { nanoid } from "nanoid";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
-export default function Page({ className }) {
+export default function Page() {
   const [searchInput, setSearchInput] = useState("");
   let isMobile;
 
@@ -50,13 +47,7 @@ export default function Page({ className }) {
 
   let content;
   if (isLoading) {
-    content = (
-      <div className="mt-5 text-center">
-        <Spinner animation="grow" variant="primary" />
-        <Spinner animation="grow" variant="warning" />
-        <Spinner animation="grow" variant="danger" />
-      </div>
-    );
+    content = <LoadingSpinner />;
   } else if (isError || data.message === "Error!") {
     content = (
       <div
@@ -81,7 +72,9 @@ export default function Page({ className }) {
               <Card className="mt-1">
                 <CardHeader>
                   <CardTitle>Independent Notes</CardTitle>
-                  <CardDescription>You have 3 unread messages.</CardDescription>
+                  <CardDescription>
+                    Here you can see all your notes
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="gap-4">
                   <div className="relative flex items-center text-gray-400 focus-within:text-gray-600 rounded-md border p-4">
@@ -111,10 +104,9 @@ export default function Page({ className }) {
                               <p className="text-sm font-medium leading-none">
                                 {item.title}
                               </p>
-                              <p className="text-sm text-muted-foreground"> </p>
+
                               <Textarea
                                 readOnly
-                                className="text-sm text-muted-foreground"
                                 rows={isMobile ? 3 : 5}
                                 value={item.text}
                               />
@@ -132,10 +124,14 @@ export default function Page({ className }) {
                       ))}
                   </div>
                 </CardContent>
-                <CardFooter>
-                  <Button className="w-full">
+                <Separator className="mb-4" />
+                <CardFooter className="relative">
+                  {/* <Button className="w-full">
                     <CheckIcon className="mr-2 h-4 w-4" /> Mark all as read
-                  </Button>
+                  </Button> */}
+                  <p className="text-sm text-muted-foreground absolute end-1">
+                    Thanks for using TextSaver
+                  </p>
                 </CardFooter>
               </Card>
             </div>

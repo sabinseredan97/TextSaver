@@ -5,7 +5,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { redirect, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +29,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function Page() {
   const params = useParams();
@@ -80,13 +80,7 @@ export default function Page() {
 
   let content;
   if (isLoading || isDeleting) {
-    content = (
-      <div className="mt-5 text-center">
-        <Spinner animation="grow" variant="primary" />
-        <Spinner animation="grow" variant="warning" />
-        <Spinner animation="grow" variant="danger" />
-      </div>
-    );
+    content = <LoadingSpinner />;
   } else if (isError || data.message === "Error!") {
     content = (
       <div
@@ -182,7 +176,7 @@ export default function Page() {
                 })
                 .map((item) => {
                   return (
-                    <Card key={item.id} className="card text-center mt-2">
+                    <Card key={item.id} className="text-center mt-2">
                       <CardHeader>
                         <CardTitle className="text-slate-600">
                           Chapter: {item.chapter}
@@ -191,10 +185,7 @@ export default function Page() {
                           Verse/s: {item.verses}
                         </CardDescription>
                       </CardHeader>
-                      <Link
-                        href={`/viewChapterVerses/${data.id}/${item.id}`}
-                        className="btn btn-outline-warning"
-                      >
+                      <Link href={`/viewChapterVerses/${data.id}/${item.id}`}>
                         <Button
                           variant="outline"
                           className="bg-green-400 hover:bg-green-300"

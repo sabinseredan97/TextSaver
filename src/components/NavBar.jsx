@@ -18,7 +18,7 @@ export default function NavBar() {
               <div className="flex items-center justify-between py-3 md:py-5 md:block">
                 {/* LOGO */}
                 <Link href="/">
-                  <h2 className="text-2xl text-cyan-600 font-bold ">
+                  <h2 className="text-2xl text-purple-600 font-bold ">
                     TextSaver
                   </h2>
                 </Link>
@@ -52,7 +52,7 @@ export default function NavBar() {
                       create="/create"
                       createTitle="Add Book"
                       list="/myBooks"
-                      listTitle="Books"
+                      listTitle="See Books"
                       onClick={() => setNavbar(!navbar)}
                     />
                   </li>
@@ -63,12 +63,12 @@ export default function NavBar() {
                       create="/createIndependentNote"
                       createTitle="Add Independent Note"
                       list="/myIndependentNotes"
-                      listTitle="Independent Notes"
+                      listTitle="See Independent Notes"
                       onClick={() => setNavbar(!navbar)}
                     />
                   </li>
                   <li className="pb-6 text-xl text-white py-2 px-6 text-center mt-4 border-b-2 md:border-b-0  hover:bg-purple-600  border-purple-900  md:hover:text-purple-600 md:hover:bg-transparent">
-                    <SignInButton />
+                    <SignInButton onClick={() => setNavbar(!navbar)} />
                   </li>
                 </ul>
               </div>

@@ -5,7 +5,6 @@ import { useState } from "react";
 import { redirect, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
-import { Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
 import {
   Form,
@@ -19,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function Page() {
   const form = useForm();
@@ -73,13 +73,7 @@ export default function Page() {
 
   let content;
   if (isLoading) {
-    content = (
-      <div className="mt-5 text-center">
-        <Spinner animation="grow" variant="primary" />
-        <Spinner animation="grow" variant="warning" />
-        <Spinner animation="grow" variant="danger" />
-      </div>
-    );
+    content = <LoadingSpinner />;
   } else if (isError || data.message === "Error!") {
     content = (
       <div

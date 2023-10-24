@@ -2,7 +2,6 @@
 
 import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Spinner } from "react-bootstrap";
 import { redirect, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
@@ -28,6 +27,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Textarea } from "@/components/ui/textarea";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function Page() {
   const params = useParams();
@@ -93,13 +93,7 @@ export default function Page() {
 
   let content;
   if (isLoading) {
-    content = (
-      <div className="mt-5 text-center">
-        <Spinner animation="grow" variant="primary" />
-        <Spinner animation="grow" variant="warning" />
-        <Spinner animation="grow" variant="danger" />
-      </div>
-    );
+    content = <LoadingSpinner />;
   } else if (isError || data.message === "Error!") {
     content = (
       <div
@@ -128,9 +122,9 @@ export default function Page() {
                   {data.book.chaptersverses[0].verses}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="card-body">
+              <CardContent>
                 <Textarea
-                  className="card-text form-control"
+                  className="text-lg"
                   style={{ width: "100%" }}
                   rows={isMobile ? 17 : 27}
                   readOnly={editNote}

@@ -5,7 +5,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { redirect, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,8 +16,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { Input } from "@/components/ui/input";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,6 +28,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Textarea } from "@/components/ui/textarea";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function Page() {
   const params = useParams();
@@ -95,13 +93,7 @@ export default function Page() {
 
   let content;
   if (isLoading || isDeleting) {
-    content = (
-      <div className="mt-5 text-center">
-        <Spinner animation="grow" variant="primary" />
-        <Spinner animation="grow" variant="warning" />
-        <Spinner animation="grow" variant="danger" />
-      </div>
-    );
+    content = <LoadingSpinner />;
   } else if (isError || data.message === "Error!") {
     content = (
       <div

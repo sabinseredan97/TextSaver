@@ -30,9 +30,7 @@ export default function RootLayout({ children }) {
             <header>
               <NavBar />
             </header>
-            <main className="p-1" style={{ marginTop: "6rem" }}>
-              {children}
-            </main>
+            <main className="pt-24 ps-1 pe-1">{children}</main>
             <ReactToastContainer />
           </Provider>
         </body>

@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { NavDropdown } from "react-bootstrap";
 import { useSession, signIn, signOut } from "next-auth/react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -11,20 +10,20 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export default function SignInButton() {
+export default function SignInButton({ onClick }) {
   const { data: session } = useSession();
 
   if (!session) {
-    return <Button onClick={() => signIn()}>Login</Button>;
+    return (
+      <Button className="hover:bg-purple-600" onClick={() => signIn()}>
+        Login
+      </Button>
+    );
   }
 
   const title = [
@@ -43,18 +42,18 @@ export default function SignInButton() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost">{title}</Button>
+        <Button variant="ghost" className="hover:bg-purple-600">
+          {title}
+        </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
+      <DropdownMenuContent className="w-56 bg-purple-600">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href={"/profile"}>Profile</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            Billing
-            <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+            <Link href={"/profile"} onClick={onClick}>
+              Profile
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
             Settings
@@ -63,12 +62,25 @@ export default function SignInButton() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuSeparator />
-        <DropdownMenuItem>GitHub</DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link
+            href={"https://github.com/sabinseredan97/TextSaver"}
+            rel="noopener noreferrer"
+            target="_blank"
+            onClick={onClick}
+          >
+            GitHub
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem>Support</DropdownMenuItem>
         <DropdownMenuItem disabled>API</DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <Button variant="secondary" onClick={() => signOut()}>
+          <Button
+            variant="secondary"
+            className="w-full"
+            onClick={() => signOut()}
+          >
             Sign Out
           </Button>
         </DropdownMenuItem>
