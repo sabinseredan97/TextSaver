@@ -1,13 +1,26 @@
 "use client";
 
+import { useForm } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { redirect, useParams } from "next/navigation";
 import { useRef, useState } from "react";
 import { Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 
 export default function Page() {
+  const form = useForm();
   const [loading, setLoading] = useState(false);
   const [edit, setEdit] = useState(true);
   const params = useParams();
@@ -92,90 +105,101 @@ export default function Page() {
       {!content ? (
         <section>
           {data && !data.message && (
-            <form onSubmit={(e) => handleSubmit(e)}>
-              <div className="form-group row mb-1">
-                <label htmlFor="book" className="col-sm-2 col-form-label">
-                  Book
-                </label>
-                <div className="col-sm-10">
-                  <input
-                    readOnly
-                    name="book"
-                    type="text"
-                    className="form-control"
-                    id="book"
-                    placeholder="Book"
-                    value={data.name}
-                  />
-                </div>
-              </div>
-
-              <div className="form-group row mb-1">
-                <label htmlFor="chapter" className="col-sm-2 col-form-label">
-                  Chapter/s
-                </label>
-                <div className="col-sm-10">
-                  <input
-                    readOnly={edit}
-                    name="chapter"
-                    type="text"
-                    className="form-control"
-                    id="chapter"
-                    placeholder="Chapter"
-                    ref={inputRef}
-                    defaultValue={data.chaptersverses[0].chapter}
-                    onChange={(e) =>
-                      setEditedData({
-                        ...editedData,
-                        chapter: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="form-group row mb-1">
-                <label htmlFor="verse" className="col-sm-2 col-form-label">
-                  Verse/s
-                </label>
-                <div className="col-sm-10">
-                  <input
-                    readOnly={edit}
-                    name="verse"
-                    type="text"
-                    className="form-control"
-                    id="verse"
-                    placeholder="Verse/s"
-                    defaultValue={data.chaptersverses[0].verses}
-                    onChange={(e) =>
-                      setEditedData({
-                        ...editedData,
-                        verses: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="text-center mt-2">
+            <Form {...form}>
+              <form className="text-center" onSubmit={(e) => handleSubmit(e)}>
+                <FormField
+                  control={form.control}
+                  name="book"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel>Book</FormLabel>
+                      <FormControl>
+                        <Input
+                          readOnly
+                          name="book"
+                          type="text"
+                          className="form-control"
+                          id="book"
+                          placeholder="Book"
+                          value={data.name}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Separator className="mt-2 mb-4" />
+                <FormField
+                  control={form.control}
+                  name="chapter"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel>Chapter/s</FormLabel>
+                      <FormControl>
+                        <Input
+                          readOnly={edit}
+                          name="chapter"
+                          type="text"
+                          className="form-control"
+                          id="chapter"
+                          placeholder="Chapter"
+                          ref={inputRef}
+                          defaultValue={data.chaptersverses[0].chapter}
+                          onChange={(e) =>
+                            setEditedData({
+                              ...editedData,
+                              chapter: e.target.value,
+                            })
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Separator className="mt-2 mb-4" />
+                <FormField
+                  control={form.control}
+                  name="verse"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel>Verse/s</FormLabel>
+                      <FormControl>
+                        <Input
+                          readOnly={edit}
+                          name="verse"
+                          type="text"
+                          className="form-control"
+                          id="verse"
+                          placeholder="Verse/s"
+                          defaultValue={data.chaptersverses[0].verses}
+                          onChange={(e) =>
+                            setEditedData({
+                              ...editedData,
+                              verses: e.target.value,
+                            })
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Separator className="mt-2 mb-4" />
                 {!edit && (
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="btn btn-secondary"
-                  >
+                  <Button type="submit" disabled={loading} className="mt-2">
                     Submit
-                  </button>
+                  </Button>
                 )}
-              </div>
-            </form>
-          )}
-          {edit && (
-            <div className="text-center mt-2">
-              <button onClick={enalbeEdit} className="btn btn-primary me-2">
-                Edit Ch & Vs
-              </button>
-            </div>
+              </form>
+              {edit && (
+                <div className="text-center mt-2">
+                  <Button onClick={enalbeEdit} className="me-2">
+                    Edit Ch & Vs
+                  </Button>
+                </div>
+              )}
+            </Form>
           )}
         </section>
       ) : (

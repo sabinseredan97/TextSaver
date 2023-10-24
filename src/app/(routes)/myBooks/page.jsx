@@ -6,6 +6,18 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { useState } from "react";
 import { Spinner } from "react-bootstrap";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { Input } from "@/components/ui/input";
 
 export default function Page() {
   const [searchInput, setSearchInput] = useState("");
@@ -54,15 +66,17 @@ export default function Page() {
       {!content ? (
         <section>
           {data && !data.message && (
-            <section>
-              <input
-                type="search"
-                className="form-control mr-sm-2 mb-2 mt-1"
-                placeholder="Search for a word"
-                aria-label="Search"
-                onChange={onChange}
-                value={searchInput}
-              />
+            <div>
+              <div className="relative flex items-center text-gray-400 focus-within:text-gray-600 rounded-md border p-4 mb-2">
+                <MagnifyingGlassIcon className="w-5 h-5 absolute ml-3 pointer-events-none" />
+                <Input
+                  type="text"
+                  placeholder="Search for a Book"
+                  onChange={onChange}
+                  value={searchInput}
+                  className="w-full pr-3 pl-10 py-2"
+                />
+              </div>
               <div>
                 {data
                   .filter((item) => {
@@ -74,28 +88,29 @@ export default function Page() {
                   })
                   .map((item) => {
                     return (
-                      <div
-                        key={item.id}
-                        className="card text-center mb-2"
-                        //style={{ width: "18rem" }}
-                      >
-                        <div className="card-body">
-                          <h5 className="card-title">{item.name}</h5>
-                          <Link
-                            href={`myBooks/${encodeURIComponent(item.id)}`}
-                            className="card-link btn btn-outline-dark me-1"
-                          >
-                            View
+                      <Card className="card text-center mb-2" key={item.id}>
+                        <CardHeader>
+                          <CardTitle>{item.name}</CardTitle>
+                          {/* <CardDescription>
+                            You have 3 unread messages.
+                          </CardDescription> */}
+                        </CardHeader>
+                        <CardContent>
+                          <Link href={`myBooks/${encodeURIComponent(item.id)}`}>
+                            <Button variant="outline">View</Button>
                           </Link>
-                          {/* <Link href="#" className="card-link">
-                            Another link
-                          </Link> */}
-                        </div>
-                      </div>
+                        </CardContent>
+                        <Separator className="mb-4" />
+                        <CardFooter className="relative">
+                          <p className="text-sm text-muted-foreground absolute end-1">
+                            Created: {new Date(item.createdAt).toDateString()}
+                          </p>
+                        </CardFooter>
+                      </Card>
                     );
                   })}
               </div>
-            </section>
+            </div>
           )}
         </section>
       ) : (

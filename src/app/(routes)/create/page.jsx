@@ -1,11 +1,26 @@
 "use client";
 
+import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { toast } from "react-toastify";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 
 export default function Page() {
+  const form = useForm();
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState({
     book: "",
@@ -47,83 +62,107 @@ export default function Page() {
   }
 
   return (
-    <form onSubmit={(e) => handleSubmit(e)}>
-      <div className="form-group row mb-1">
-        <label htmlFor="book" className="col-sm-2 col-form-label">
-          Book
-        </label>
-        <div className="col-sm-10">
-          <input
-            onChange={(e) => setData({ ...data, book: e.target.value })}
-            name="book"
-            type="text"
-            className="form-control"
-            id="book"
-            placeholder="Book"
-            value={data.book}
-          />
-        </div>
-      </div>
-
-      <div className="form-group row mb-1">
-        <label htmlFor="chapter" className="col-sm-2 col-form-label">
-          Chapter/s
-        </label>
-        <div className="col-sm-10">
-          <input
-            onChange={(e) => setData({ ...data, chapter: e.target.value })}
-            name="chapter"
-            type="text"
-            className="form-control"
-            id="chapter"
-            placeholder="Chapter"
-            value={data.chapter}
-          />
-        </div>
-      </div>
-
-      <div className="form-group row mb-1">
-        <label htmlFor="verse" className="col-sm-2 col-form-label">
-          Verse/s
-        </label>
-        <div className="col-sm-10">
-          <input
-            onChange={(e) => setData({ ...data, verse: e.target.value })}
-            name="verse"
-            type="text"
-            className="form-control"
-            id="verse"
-            placeholder="Verse/s"
-            value={data.verse}
-          />
-        </div>
-      </div>
-
-      <div className="form-group row mb-1">
-        <label htmlFor="note" className="col-sm-2 col-form-label">
-          Note
-        </label>
-        <div className="col-sm-10">
-          <textarea
-            onChange={(e) => setData({ ...data, note: e.target.value })}
-            name="note"
-            className="form-control"
-            id="note"
-            rows={10}
-            placeholder="Note"
-            value={data.note}
-          />
-        </div>
-      </div>
-      <div className="text-center mt-2">
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="btn btn-secondary"
-        >
+    <Form {...form}>
+      <form className="text-center" onSubmit={(e) => handleSubmit(e)}>
+        <FormField
+          control={form.control}
+          name="book"
+          render={() => (
+            <FormItem>
+              <FormLabel>Book</FormLabel>
+              <FormControl>
+                <Input
+                  onChange={(e) => setData({ ...data, book: e.target.value })}
+                  name="book"
+                  type="text"
+                  id="book"
+                  placeholder="Book"
+                  value={data.book}
+                />
+              </FormControl>
+              <FormDescription>This is your book's name.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Separator className="mt-2 mb-4" />
+        <FormField
+          control={form.control}
+          name="chapter"
+          render={() => (
+            <FormItem>
+              <FormLabel>Chapter/s</FormLabel>
+              <FormControl>
+                <Input
+                  onChange={(e) =>
+                    setData({ ...data, chapter: e.target.value })
+                  }
+                  name="chapter"
+                  type="text"
+                  id="chapter"
+                  placeholder="Chapter"
+                  value={data.chapter}
+                />
+              </FormControl>
+              <FormDescription>This is your book's chapter/s.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Separator className="mt-2 mb-4" />
+        <FormField
+          control={form.control}
+          name="verse"
+          render={() => (
+            <FormItem>
+              <FormLabel>Verse/s</FormLabel>
+              <FormControl>
+                <Input
+                  onChange={(e) => setData({ ...data, verse: e.target.value })}
+                  name="verse"
+                  type="text"
+                  id="verse"
+                  placeholder="Verse/s"
+                  value={data.verse}
+                />
+              </FormControl>
+              <FormDescription>
+                This is your book's and chapter/s verse/s.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Separator className="mt-2 mb-4" />
+        <FormField
+          control={form.control}
+          name="note"
+          render={() => (
+            <FormItem>
+              <FormLabel>Note</FormLabel>
+              <FormControl>
+                <Textarea
+                  onChange={(e) => setData({ ...data, note: e.target.value })}
+                  name="note"
+                  id="note"
+                  rows={10}
+                  placeholder="Note"
+                  value={data.note}
+                />
+              </FormControl>
+              <FormDescription>
+                This is your note for the book and it also belongs to the
+                chapter/s and verse/s.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Separator className="mt-2 mb-4" />
+        <Button type="submit" disabled={isLoading}>
           Submit
-        </button>
-      </div>
-    </form>
+        </Button>
+      </form>
+    </Form>
   );
 }

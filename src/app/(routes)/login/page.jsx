@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { Button } from "@/components/ui/button";
 
 export default function Page() {
   const searchParams = useSearchParams();
@@ -24,10 +25,7 @@ export default function Page() {
           </h1>
         </div>
         <div className="text-center sm:rounded-5xl -mx-4 mt-10 flex-auto bg-white px-5 py-1 shadow-2xl shadow-gray-900/10 sm:mx-0 sm:flex-none sm:p-24">
-          <button
-            className="btn btn-primary"
-            onClick={async () => await signIn("google", { callbackUrl })}
-          >
+          <Button onClick={async () => await signIn("google", { callbackUrl })}>
             <svg
               aria-hidden="true"
               focusable="false"
@@ -43,7 +41,7 @@ export default function Page() {
               ></path>
             </svg>
             Continue with Google
-          </button>
+          </Button>
         </div>
       </div>
     </section>

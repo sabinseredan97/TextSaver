@@ -1,11 +1,15 @@
-import NavBar from "@/app/components/NavBar";
+import NavBar from "@/components/NavBar";
 import "./globals.css";
-import { Inter } from "next/font/google";
-import Provider from "./components/Provider";
-import ReactQueryProvider from "./components/ReactQueryProvider";
-import ReactToastContainer from "./components/ReactToastContainer";
+import { Inter as FontSans } from "next/font/google";
+import Provider from "../components/Provider";
+import ReactQueryProvider from "../components/ReactQueryProvider";
+import ReactToastContainer from "../components/ReactToastContainer";
+import { cn } from "@/lib/utils";
 
-const inter = Inter({ subsets: ["latin"] });
+export const fontSans = FontSans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
 
 export const metadata = {
   title: "TextSaver",
@@ -16,12 +20,19 @@ export default function RootLayout({ children }) {
   return (
     <ReactQueryProvider>
       <html lang="en">
-        <body className={inter.className}>
+        <body
+          className={cn(
+            "min-h-screen bg-background font-sans antialiased",
+            fontSans.variable
+          )}
+        >
           <Provider>
             <header>
               <NavBar />
             </header>
-            <main style={{ marginTop: "4rem" }}>{children}</main>
+            <main className="p-1" style={{ marginTop: "6rem" }}>
+              {children}
+            </main>
             <ReactToastContainer />
           </Provider>
         </body>

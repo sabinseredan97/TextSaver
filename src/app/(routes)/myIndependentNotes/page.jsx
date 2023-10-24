@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -7,7 +8,24 @@ import { redirect } from "next/navigation";
 import { useState } from "react";
 import { Spinner } from "react-bootstrap";
 
-export default function Page() {
+import { Textarea } from "@/components/ui/textarea";
+import { CheckIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { nanoid } from "nanoid";
+
+export default function Page({ className }) {
   const [searchInput, setSearchInput] = useState("");
   let isMobile;
 
@@ -57,58 +75,70 @@ export default function Page() {
   return (
     <>
       {!content ? (
-        <section>
+        <section className="text-center">
           {data && !data.message && (
-            <section>
-              <input
-                type="search"
-                className="form-control mr-sm-2 mb-2 mt-1"
-                placeholder="Search for a word"
-                aria-label="Search"
-                onChange={onChange}
-                value={searchInput}
-              />
-              <div>
-                {data
-                  .filter((item) => {
-                    return searchInput.toLowerCase() === ""
-                      ? item.title
-                      : item.title
-                          .toLowerCase()
-                          .includes(searchInput.toLowerCase());
-                  })
-                  .map((item) => {
-                    return (
-                      <div
-                        key={item.id}
-                        className="card text-center mb-2"
-                        //style={{ width: "18rem" }}
-                      >
-                        <div className="card-body">
-                          <h5 className="card-title">{item.title}</h5>
-                          <textarea
-                            readOnly
-                            className="card-text form-control"
-                            rows={isMobile ? 3 : 5}
-                            value={item.text}
-                          />
-                          <Link
-                            href={`viewIndependentNote/${encodeURIComponent(
-                              item.id
-                            )}`}
-                            className="card-link btn btn-outline-dark me-1 mt-1"
-                          >
-                            View
-                          </Link>
-                          {/* <Link href="#" className="card-link">
-                            Another link
-                          </Link> */}
-                        </div>
-                      </div>
-                    );
-                  })}
-              </div>
-            </section>
+            <div className="text-center">
+              <Card className="mt-1">
+                <CardHeader>
+                  <CardTitle>Independent Notes</CardTitle>
+                  <CardDescription>You have 3 unread messages.</CardDescription>
+                </CardHeader>
+                <CardContent className="gap-4">
+                  <div className="relative flex items-center text-gray-400 focus-within:text-gray-600 rounded-md border p-4">
+                    <MagnifyingGlassIcon className="w-5 h-5 absolute ml-3 pointer-events-none" />
+                    <Input
+                      type="text"
+                      placeholder="Search for a title"
+                      onChange={onChange}
+                      value={searchInput}
+                      className="w-full pr-3 pl-10 py-2"
+                    />
+                  </div>
+                  <div>
+                    {data
+                      .filter((searchItem) => {
+                        return searchInput.toLowerCase() === ""
+                          ? searchItem.title
+                          : searchItem.title
+                              .toLowerCase()
+                              .includes(searchInput.toLowerCase());
+                      })
+                      .map((item) => (
+                        <React.Fragment key={nanoid()}>
+                          <div key={item.id} className="mb-4 text-center">
+                            <br />
+                            <div className="space-y-1">
+                              <p className="text-sm font-medium leading-none">
+                                {item.title}
+                              </p>
+                              <p className="text-sm text-muted-foreground"> </p>
+                              <Textarea
+                                readOnly
+                                className="text-sm text-muted-foreground"
+                                rows={isMobile ? 3 : 5}
+                                value={item.text}
+                              />
+                              <Link
+                                href={`viewIndependentNote/${encodeURIComponent(
+                                  item.id
+                                )}`}
+                              >
+                                <Button className="mt-1">View</Button>
+                              </Link>
+                            </div>
+                          </div>
+                          <Separator className="my-4" />
+                        </React.Fragment>
+                      ))}
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button className="w-full">
+                    <CheckIcon className="mr-2 h-4 w-4" /> Mark all as read
+                  </Button>
+                </CardFooter>
+              </Card>
+            </div>
           )}
         </section>
       ) : (

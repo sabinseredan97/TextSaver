@@ -1,13 +1,27 @@
 "use client";
 
+import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { redirect, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
 import { Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 
 export default function Page() {
+  const form = useForm();
   const params = useParams();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
@@ -82,98 +96,111 @@ export default function Page() {
       {!content ? (
         <section>
           {book && !book.message && (
-            <div>
-              <div className="form-group row">
-                <label htmlFor="book" className="col-sm-2 col-form-label">
-                  Book
-                </label>
-                <div className="col-sm-10">
-                  <input
-                    name="book"
-                    type="text"
-                    className="form-control"
-                    id="book"
-                    readOnly
-                    value={book.name}
-                  />
-                </div>
-              </div>
-
-              <div className="form-group row mt-1">
-                <label htmlFor="chapter" className="col-sm-2 col-form-label">
-                  Chapter/s
-                </label>
-                <div className="col-sm-10">
-                  <input
-                    onChange={(e) =>
-                      setData({
-                        ...data,
-                        chapter: e.target.value,
-                      })
-                    }
-                    name="chapter"
-                    type="text"
-                    className="form-control"
-                    id="chapter"
-                    placeholder="Chapter"
-                    value={data.chapter}
-                  />
-                </div>
-              </div>
-
-              <div className="form-group row mt-1">
-                <label htmlFor="verse" className="col-sm-2 col-form-label">
-                  Verse/s
-                </label>
-                <div className="col-sm-10">
-                  <input
-                    onChange={(e) =>
-                      setData({
-                        ...data,
-                        verse: e.target.value,
-                      })
-                    }
-                    name="verse"
-                    type="text"
-                    className="form-control"
-                    id="verse"
-                    placeholder="Verse/s"
-                    value={data.verse}
-                  />
-                </div>
-              </div>
-
-              <div className="form-group row mt-1">
-                <label htmlFor="note" className="col-sm-2 col-form-label">
-                  Note
-                </label>
-                <div className="col-sm-10">
-                  <textarea
-                    onChange={(e) => {
-                      setData({
-                        ...data,
-                        note: e.target.value,
-                      });
-                    }}
-                    name="note"
-                    className="form-control"
-                    id="note"
-                    rows={5}
-                    placeholder="Note"
-                    value={data.note}
-                  />
-                </div>
-              </div>
-              <div className="text-center mt-1">
-                <button
-                  onClick={(e) => handleSubmit(e)}
-                  className="btn btn-secondary"
-                  disabled={loading}
-                >
+            <Form {...form}>
+              <form className="text-center" onSubmit={(e) => handleSubmit(e)}>
+                <FormField
+                  control={form.control}
+                  name="book"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel>Book</FormLabel>
+                      <FormControl>
+                        <Input
+                          name="book"
+                          type="text"
+                          id="book"
+                          readOnly
+                          value={book.name}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Separator className="mt-2 mb-4" />
+                <FormField
+                  control={form.control}
+                  name="chapter"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel>Chapter/s</FormLabel>
+                      <FormControl>
+                        <Input
+                          onChange={(e) =>
+                            setData({
+                              ...data,
+                              chapter: e.target.value,
+                            })
+                          }
+                          name="chapter"
+                          type="text"
+                          id="chapter"
+                          placeholder="Chapter"
+                          value={data.chapter}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Separator className="mt-2 mb-4" />
+                <FormField
+                  control={form.control}
+                  name="verse"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel>Verse/s</FormLabel>
+                      <FormControl>
+                        <Input
+                          onChange={(e) =>
+                            setData({
+                              ...data,
+                              verse: e.target.value,
+                            })
+                          }
+                          name="verse"
+                          type="text"
+                          id="verse"
+                          placeholder="Verse/s"
+                          value={data.verse}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Separator className="mt-2 mb-4" />
+                <FormField
+                  control={form.control}
+                  name="note"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel>Note</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          onChange={(e) => {
+                            setData({
+                              ...data,
+                              note: e.target.value,
+                            });
+                          }}
+                          name="note"
+                          id="note"
+                          rows={5}
+                          placeholder="Note"
+                          value={data.note}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Separator className="mt-2 mb-4" />
+                <Button type="submit" disabled={loading}>
                   Submit
-                </button>
-              </div>
-            </div>
+                </Button>
+              </form>
+            </Form>
           )}
         </section>
       ) : (

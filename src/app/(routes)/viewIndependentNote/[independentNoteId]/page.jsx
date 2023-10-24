@@ -1,11 +1,26 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { redirect, useParams } from "next/navigation";
 import { useRef, useState } from "react";
 import { Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function Page() {
   const [loading, setLoading] = useState(false);
@@ -106,41 +121,64 @@ export default function Page() {
   return (
     <>
       {!content ? (
-        <section>
+        <section className="w-full text-center">
           {data && !data.message && (
-            <div key={data.id} className="card text-center mb-2">
-              <div className="card-body">
-                <h5 className="card-title">{data.title}</h5>
-                <textarea
+            <Card key={data.id}>
+              <CardHeader>
+                <CardTitle>{data.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Textarea
                   readOnly={editNote}
-                  className="card-text form-control"
-                  rows={isMobile ? 17 : 27}
+                  className="text-sm text-muted-foreground"
+                  rows={isMobile ? 17 : 30}
                   defaultValue={data.text}
                   ref={textareaRef}
                 />
-                <div className="text-center mt-2">
-                  <button onClick={enalbeEdit} className="btn btn-primary me-2">
-                    Edit Note
-                  </button>
-                  {!editNote && (
-                    <button
+                <div className="mt-2">
+                  {!editNote ? (
+                    <Button
                       onClick={saveEditedNote}
-                      className="btn btn-primary me-2"
+                      className="me-2"
                       disabled={loading}
                     >
                       Save Note
-                    </button>
+                    </Button>
+                  ) : (
+                    <Button onClick={enalbeEdit} className="me-2">
+                      Edit Note
+                    </Button>
                   )}
-                  <button
-                    onClick={deleteNote}
-                    disabled={loading}
-                    className="btn btn-danger me-2"
-                  >
-                    Delete Note
-                  </button>
+                  <AlertDialog className="me-2">
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" disabled={loading}>
+                        Delete Note
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Are you absolutely sure?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently
+                          delete your note from our servers.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={deleteNote}
+                          disabled={loading}
+                        >
+                          Continue
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           )}
         </section>
       ) : (
