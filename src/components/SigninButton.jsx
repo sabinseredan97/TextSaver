@@ -14,6 +14,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function SignInButton({ onClick }) {
   const { data: session } = useSession();
@@ -30,24 +31,21 @@ export default function SignInButton({ onClick }) {
     <Image
       //priority={true}
       key={"img"}
-      src={session.user?.image}
-      alt={session.user?.name}
-      width={28}
-      height={28}
-      className="rounded-full mr-2"
+      src={session.user.image}
+      alt={session.user.name}
+      width={45}
+      height={45}
+      className="rounded-full mt-1"
     />,
-    session.user?.name,
   ];
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="hover:bg-purple-600">
-          {title}
-        </Button>
+      <DropdownMenuTrigger className="outline-none text-base" asChild>
+        <button className="border-none outline-none hover:none">{title}</button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56 bg-purple-600">
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuLabel>{session.user.name}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>

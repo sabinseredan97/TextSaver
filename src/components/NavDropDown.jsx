@@ -13,10 +13,10 @@ import Link from "next/link";
 export default function NavDropDown(props) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="hover:bg-purple-600">
+      <DropdownMenuTrigger className="outline-none text-base" asChild>
+        <button className="border-none outline-none hover:none">
           {props.title}
-        </Button>
+        </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>{props.label}</DropdownMenuLabel>

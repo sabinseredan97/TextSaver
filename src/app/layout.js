@@ -5,6 +5,7 @@ import Provider from "../components/Provider";
 import ReactQueryProvider from "../components/ReactQueryProvider";
 import ReactToastContainer from "../components/ReactToastContainer";
 import { cn } from "@/lib/utils";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export const fontSans = FontSans({
   subsets: ["latin"],
@@ -27,11 +28,18 @@ export default function RootLayout({ children }) {
           )}
         >
           <Provider>
-            <header>
-              <NavBar />
-            </header>
-            <main className="pt-24 ps-1 pe-1">{children}</main>
-            <ReactToastContainer />
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <header>
+                <NavBar />
+              </header>
+              <main className="pt-24 ps-1 pe-1">{children}</main>
+              <ReactToastContainer />
+            </ThemeProvider>
           </Provider>
         </body>
       </html>

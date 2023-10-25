@@ -26,6 +26,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { Separator } from "@/components/ui/separator";
 
 export default function Page() {
   const [loading, setLoading] = useState(false);
@@ -177,6 +178,7 @@ export default function Page() {
                   </AlertDialog>
                 </div>
               </CardContent>
+              <Separator className="mb-4" />
               <CardFooter className="relative">
                 <p className="text-sm text-muted-foreground absolute end-1">
                   Created: {new Date(data.createdAt).toDateString()}

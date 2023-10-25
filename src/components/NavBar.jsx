@@ -6,6 +6,7 @@ import SignInButton from "./SigninButton";
 import { HamburgerMenuIcon, Cross1Icon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
 import NavDropDown from "./NavDropDown";
+import { ModeToggle } from "./ModeToggle";
 
 export default function NavBar() {
   const [navbar, setNavbar] = useState(false);
@@ -40,11 +41,6 @@ export default function NavBar() {
                 }`}
               >
                 <ul className="h-screen md:h-auto items-center justify-center md:flex ">
-                  {/* <li className="pb-6 text-xl text-white py-2 md:px-6 text-center border-b-2 md:border-b-0  hover:bg-purple-900  border-purple-900  md:hover:text-purple-600 md:hover:bg-transparent">
-                    <Link href="#about" onClick={() => setNavbar(!navbar)}>
-                      About
-                    </Link>
-                  </li> */}
                   <li className="pb-6 text-xl text-white py-2 px-6 text-center mt-4 border-b-2 md:border-b-0  hover:bg-purple-600  border-purple-900  md:hover:text-purple-600 md:hover:bg-transparent">
                     <NavDropDown
                       title="Books"
@@ -67,7 +63,13 @@ export default function NavBar() {
                       onClick={() => setNavbar(!navbar)}
                     />
                   </li>
-                  <li className="pb-6 text-xl text-white py-2 px-6 text-center mt-4 border-b-2 md:border-b-0  hover:bg-purple-600  border-purple-900  md:hover:text-purple-600 md:hover:bg-transparent">
+                  {/* <li className="pb-6 text-xl text-white py-2 px-6 text-center mt-4 border-b-2 md:border-b-0  hover:bg-purple-600  border-purple-900  md:hover:text-purple-600 md:hover:bg-transparent">
+                    <SignInButton onClick={() => setNavbar(!navbar)} />
+                  </li> */}
+                  <li className="text-white text-center py-6 px-6 md:py-1 border-b-2 md:border-b-0 border-purple-900">
+                    <ModeToggle />
+                  </li>
+                  <li className="text-white text-center py-6 px-6 md:py-1 border-b-2 md:border-b-0 border-purple-900">
                     <SignInButton onClick={() => setNavbar(!navbar)} />
                   </li>
                 </ul>

@@ -142,7 +142,7 @@ export default function Page() {
                     <Link href={`/myBooks/${data.id}/addChVers`}>
                       <Button
                         variant="outline"
-                        className="bg-green-600 hover:bg-green-500"
+                        className="bg-green-700 hover:bg-green-600"
                       >
                         New Chapter/s and Verse/s
                       </Button>
@@ -188,7 +188,7 @@ export default function Page() {
                       <Link href={`/viewChapterVerses/${data.id}/${item.id}`}>
                         <Button
                           variant="outline"
-                          className="bg-green-400 hover:bg-green-300"
+                          className="bg-emerald-600 hover:bg-emerald-500"
                         >
                           View Chapter/s & Verse/s
                         </Button>

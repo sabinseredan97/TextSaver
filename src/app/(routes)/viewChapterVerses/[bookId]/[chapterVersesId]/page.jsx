@@ -118,10 +118,11 @@ export default function Page() {
               <Card className="mb-1">
                 <CardHeader>
                   <CardTitle className="text-2xl">{data.name}</CardTitle>
-                  <CardDescription className="text-xl text-slate-900">
+                  <Separator className="my-4" />
+                  <CardDescription className="text-xl">
                     Chapter: {data.chaptersverses[0].chapter}
                   </CardDescription>
-                  <CardDescription className="text-lg text-slate-600">
+                  <CardDescription className="text-base">
                     Verse/s: {data.chaptersverses[0].verses}
                   </CardDescription>
                 </CardHeader>
@@ -168,7 +169,7 @@ export default function Page() {
                     >
                       <Button
                         variant="outline"
-                        className="bg-amber-400 hover:bg-amber-300"
+                        className="bg-yellow-600 hover:bg-yellow-500"
                       >
                         Edit Chapter & Verse
                       </Button>
@@ -186,7 +187,7 @@ export default function Page() {
                     >
                       <Button
                         variant="outline"
-                        className="bg-green-600 hover:bg-green-500"
+                        className="bg-emerald-800 hover:bg-emerald-700"
                       >
                         Add Note
                       </Button>
