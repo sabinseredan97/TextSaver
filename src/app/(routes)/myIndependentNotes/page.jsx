@@ -110,17 +110,17 @@ export default function Page() {
                                 rows={isMobile ? 3 : 5}
                                 value={item.text}
                               />
-                              <div className="relative">
-                                <p className="text-sm text-muted-foreground absolute end-1">
+                              <CardFooter className="relative">
+                                <p className="text-sm text-muted-foreground absolute end-1 mt-4">
                                   {new Date(item.createdAt).toDateString()}
                                 </p>
-                              </div>
+                              </CardFooter>
                               <Link
                                 href={`viewIndependentNote/${encodeURIComponent(
                                   item.id
                                 )}`}
                               >
-                                <Button className="mt-1">View</Button>
+                                <Button>View</Button>
                               </Link>
                             </div>
                           </div>
