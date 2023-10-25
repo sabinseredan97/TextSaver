@@ -5,7 +5,7 @@ import Provider from "../components/Provider";
 import ReactQueryProvider from "../components/ReactQueryProvider";
 import ReactToastContainer from "../components/ReactToastContainer";
 import { cn } from "@/lib/utils";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 export const fontSans = FontSans({
   subsets: ["latin"],
