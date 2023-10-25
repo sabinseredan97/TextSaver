@@ -125,8 +125,8 @@ export default function Page() {
               <CardContent>
                 <Textarea
                   className="text-lg"
-                  style={{ width: "100%" }}
-                  rows={isMobile ? 17 : 27}
+                  //style={{ width: "100%" }}
+                  rows={isMobile ? 12 : 21}
                   readOnly={editNote}
                   defaultValue={data.note.text}
                   ref={textareaRef}

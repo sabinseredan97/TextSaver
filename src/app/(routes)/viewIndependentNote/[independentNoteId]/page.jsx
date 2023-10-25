@@ -1,7 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
@@ -124,7 +130,7 @@ export default function Page() {
                 <Textarea
                   readOnly={editNote}
                   className="text-lg"
-                  rows={isMobile ? 17 : 30}
+                  rows={isMobile ? 14 : 23}
                   defaultValue={data.text}
                   ref={textareaRef}
                 />
@@ -171,6 +177,11 @@ export default function Page() {
                   </AlertDialog>
                 </div>
               </CardContent>
+              <CardFooter className="relative">
+                <p className="text-sm text-muted-foreground absolute end-1">
+                  Created: {new Date(data.createdAt).toDateString()}
+                </p>
+              </CardFooter>
             </Card>
           )}
         </section>

@@ -110,6 +110,12 @@ export default function Page() {
                                 rows={isMobile ? 3 : 5}
                                 value={item.text}
                               />
+                              <div className="relative">
+                                <p className="text-sm text-muted-foreground absolute end-1">
+                                  Created:{" "}
+                                  {new Date(item.createdAt).toDateString()}
+                                </p>
+                              </div>
                               <Link
                                 href={`viewIndependentNote/${encodeURIComponent(
                                   item.id
