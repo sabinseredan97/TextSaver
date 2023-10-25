@@ -112,7 +112,6 @@ export default function Page() {
                               />
                               <div className="relative">
                                 <p className="text-sm text-muted-foreground absolute end-1">
-                                  Created:{" "}
                                   {new Date(item.createdAt).toDateString()}
                                 </p>
                               </div>
