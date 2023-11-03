@@ -18,14 +18,26 @@ import { Separator } from "@/components/ui/separator";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Input } from "@/components/ui/input";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { useSearchParams } from "next/navigation";
+import Pagination from "@/components/Pagination";
 
 export default function Page() {
+  const searchParams = useSearchParams();
   const [searchInput, setSearchInput] = useState("");
 
+  const page =
+    typeof searchParams.get("page") === "string"
+      ? parseInt(searchParams.get("page"))
+      : 1;
+  const limit =
+    typeof searchParams.get("limit") === "string"
+      ? parseInt(searchParams.get("limit"))
+      : 20;
+
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["myBooks"],
+    queryKey: [`myBooks-${page}-${limit}`],
     queryFn: () =>
-      fetch("/api/get/allBooks", {
+      fetch(`/api/get/allBooks/${page}/${limit}`, {
         method: "GET",
       }).then((res) => res.json()),
   });
@@ -46,17 +58,14 @@ export default function Page() {
     content = <LoadingSpinner />;
   } else if (isError || data.message === "Error!") {
     content = (
-      <div
-        className="alert alert-danger d-flex align-items-center"
-        role="alert"
-      >
+      <div className="flex items-center justify-center text-indigo-50 bg-red-400 h-24 rounded-lg">
         Nothing Found
       </div>
     );
   }
 
   return (
-    <>
+    <Pagination page={page} limit={limit}>
       {!content ? (
         <section>
           {data && !data.message && (
@@ -110,6 +119,6 @@ export default function Page() {
       ) : (
         content
       )}
-    </>
+    </Pagination>
   );
 }

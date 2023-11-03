@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "../../../../../../auth/[...nextauth]/route";
 import { getUser } from "@/services/server-actions";
 import { prisma } from "@/db";
 
@@ -15,7 +15,10 @@ export async function GET(req, { params }) {
   }
 
   try {
-    const { bookId, chapterVersesId } = params;
+    const { bookId, chapterVersesId } = params; //parseInt(params.noteId);
+    const page = parseInt(params.page);
+    const limit = parseInt(params.limit);
+    const skip = (page - 1) * limit;
 
     const user = await getUser(session.user.email);
 
@@ -23,10 +26,24 @@ export async function GET(req, { params }) {
       where: { AND: [{ id: bookId, userId: user.Id }] },
       include: {
         chaptersverses: { where: { id: chapterVersesId } },
+        notes: {
+          skip: skip,
+          take: limit,
+          where: { chaptersversesId: chapterVersesId },
+        },
       },
     });
 
     if (!book || book.chaptersverses.length < 1) throw new Error();
+
+    /* const chaptersVerses = await prisma.ChaptersVerses.findUnique({
+      where: { id: chaptersVersesId },
+      include: {
+        notes: { orderBy: { createdAt: "desc" } },
+      },
+    });
+
+    if (!chaptersVerses) throw new Error(); */
 
     return NextResponse.json(book, { status: 200 });
   } catch (error) {

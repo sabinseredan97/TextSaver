@@ -30,18 +30,30 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { useSearchParams } from "next/navigation";
+import Pagination from "@/components/Pagination";
 
 export default function Page() {
+  const searchParams = useSearchParams();
   const params = useParams();
-  const bookId = params.bookId;
+  const bookId = decodeURIComponent(params.bookId);
   const [searchInput, setSearchInput] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
 
+  const page =
+    typeof searchParams.get("page") === "string"
+      ? parseInt(searchParams.get("page"))
+      : 1;
+  const limit =
+    typeof searchParams.get("limit") === "string"
+      ? parseInt(searchParams.get("limit"))
+      : 20;
+
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: [`book-${decodeURIComponent(bookId)}`],
+    queryKey: [`book-${bookId}-${page}-${limit}`],
     queryFn: () =>
-      fetch(`/api/get/bookById/${decodeURIComponent(bookId)}`, {
+      fetch(`/api/get/bookById/${bookId}/${page}/${limit}`, {
         method: "GET",
       }).then((res) => res.json()),
   });
@@ -60,14 +72,11 @@ export default function Page() {
   async function deleteBook() {
     try {
       setIsDeleting(true);
-      const response = await fetch(
-        `/api/delete/book/${decodeURIComponent(bookId)}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const response = await fetch(`/api/delete/book/${bookId}`, {
+        method: "DELETE",
+      });
       if (response.status === 200) {
-        queryClient.cancelQueries([`book-${decodeURIComponent(bookId)}`]);
+        queryClient.cancelQueries([`book-${bookId}`]);
         refetch();
         toast.success("Book deleted!");
       }
@@ -83,10 +92,7 @@ export default function Page() {
     content = <LoadingSpinner />;
   } else if (isError || data.message === "Error!") {
     content = (
-      <div
-        className="alert alert-danger d-flex align-items-center"
-        role="alert"
-      >
+      <div className="flex items-center justify-center text-indigo-50 bg-red-400 h-24 rounded-lg">
         Nothing Found
       </div>
     );
@@ -168,40 +174,42 @@ export default function Page() {
                   </p>
                 </CardFooter>
               </Card>
-              {data.chaptersverses
-                .filter((chapter) => {
-                  return searchInput === ""
-                    ? chapter.chapter
-                    : chapter.chapter === searchInput;
-                })
-                .map((item) => {
-                  return (
-                    <Card key={item.id} className="text-center mt-2">
-                      <CardHeader>
-                        <CardTitle className="text-slate-600">
-                          Chapter: {item.chapter}
-                        </CardTitle>
-                        <CardDescription className="text-slate-500">
-                          Verse/s: {item.verses}
-                        </CardDescription>
-                      </CardHeader>
-                      <Link href={`/viewChapterVerses/${data.id}/${item.id}`}>
-                        <Button
-                          variant="outline"
-                          className="bg-emerald-600 hover:bg-emerald-500"
-                        >
-                          View Chapter/s & Verse/s
-                        </Button>
-                      </Link>
-                      <Separator className="mb-4 mt-2" />
-                      <CardFooter className="relative">
-                        <p className="text-sm text-muted-foreground absolute end-1">
-                          Created: {new Date(item.createdAt).toDateString()}
-                        </p>
-                      </CardFooter>
-                    </Card>
-                  );
-                })}
+              <Pagination page={page} limit={limit}>
+                {data.chaptersverses
+                  .filter((chapter) => {
+                    return searchInput === ""
+                      ? chapter.chapter
+                      : chapter.chapter === searchInput;
+                  })
+                  .map((item) => {
+                    return (
+                      <Card key={item.id} className="text-center mt-2">
+                        <CardHeader>
+                          <CardTitle className="text-slate-600">
+                            Chapter: {item.chapter}
+                          </CardTitle>
+                          <CardDescription className="text-slate-500">
+                            Verse/s: {item.verses}
+                          </CardDescription>
+                        </CardHeader>
+                        <Link href={`/viewChapterVerses/${data.id}/${item.id}`}>
+                          <Button
+                            variant="outline"
+                            className="bg-emerald-600 hover:bg-emerald-500"
+                          >
+                            View Chapter/s & Verse/s
+                          </Button>
+                        </Link>
+                        <Separator className="mb-4 mt-2" />
+                        <CardFooter className="relative">
+                          <p className="text-sm text-muted-foreground absolute end-1">
+                            Created: {new Date(item.createdAt).toDateString()}
+                          </p>
+                        </CardFooter>
+                      </Card>
+                    );
+                  })}
+              </Pagination>
             </div>
           )}
         </section>

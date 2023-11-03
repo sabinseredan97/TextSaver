@@ -29,8 +29,11 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Textarea } from "@/components/ui/textarea";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { useSearchParams } from "next/navigation";
+import Pagination from "@/components/Pagination";
 
 export default function Page() {
+  const searchParams = useSearchParams();
   const params = useParams();
   const bookId = decodeURIComponent(params.bookId);
   const chapterVersesId = decodeURIComponent(params.chapterVersesId);
@@ -38,13 +41,22 @@ export default function Page() {
   const queryClient = useQueryClient();
   let isMobile;
 
+  const page =
+    typeof searchParams.get("page") === "string"
+      ? parseInt(searchParams.get("page"))
+      : 1;
+  const limit =
+    typeof searchParams.get("limit") === "string"
+      ? parseInt(searchParams.get("limit"))
+      : 20;
+
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: [`book-${bookId}-${chapterVersesId}`],
+    queryKey: [`book-${bookId}-${chapterVersesId}-${page}-${limit}`],
     queryFn: () =>
       fetch(
         `/api/get/chapterVersesById/${encodeURIComponent(
           bookId
-        )}/${encodeURIComponent(chapterVersesId)}`,
+        )}/${encodeURIComponent(chapterVersesId)}/${page}/${limit}`,
         {
           method: "GET",
         }
@@ -96,10 +108,7 @@ export default function Page() {
     content = <LoadingSpinner />;
   } else if (isError || data.message === "Error!") {
     content = (
-      <div
-        className="alert alert-danger d-flex align-items-center"
-        role="alert"
-      >
+      <div className="flex items-center justify-center text-indigo-50 bg-red-400 h-24 rounded-lg">
         Nothing Found
       </div>
     );
@@ -201,36 +210,38 @@ export default function Page() {
                   </p>
                 </CardFooter>
               </Card>
-              {data.notes.map((note) => {
-                return (
-                  <Card className="card mb-2 text-center" key={note.id}>
-                    <CardHeader>
-                      <CardTitle>Note</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <Textarea
-                        readOnly
-                        rows={isMobile ? 3 : 5}
-                        value={note.text}
-                      />
-                      <Link href={`/viewNote/${encodeURIComponent(note.id)}`}>
-                        <Button
-                          variant="outline"
-                          className="bg-cyan-500 hover:bg-cyan-400 mt-2"
-                        >
-                          View Note
-                        </Button>
-                      </Link>
-                    </CardContent>
-                    <Separator className="mb-4" />
-                    <CardFooter className="relative">
-                      <p className="text-sm text-muted-foreground absolute end-1">
-                        Created: {new Date(note.createdAt).toDateString()}
-                      </p>
-                    </CardFooter>
-                  </Card>
-                );
-              })}
+              <Pagination page={page} limit={limit}>
+                {data.notes.map((note) => {
+                  return (
+                    <Card className="card mb-2 text-center" key={note.id}>
+                      <CardHeader>
+                        <CardTitle>Note</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <Textarea
+                          readOnly
+                          rows={isMobile ? 3 : 5}
+                          value={note.text}
+                        />
+                        <Link href={`/viewNote/${encodeURIComponent(note.id)}`}>
+                          <Button
+                            variant="outline"
+                            className="bg-cyan-500 hover:bg-cyan-400 mt-2"
+                          >
+                            View Note
+                          </Button>
+                        </Link>
+                      </CardContent>
+                      <Separator className="mb-4" />
+                      <CardFooter className="relative">
+                        <p className="text-sm text-muted-foreground absolute end-1">
+                          Created: {new Date(note.createdAt).toDateString()}
+                        </p>
+                      </CardFooter>
+                    </Card>
+                  );
+                })}
+              </Pagination>
             </div>
           )}
         </section>

@@ -15,8 +15,7 @@ export async function DELETE(req, { params }) {
   }
 
   try {
-    const bookId = params.bookId; //parseInt(params.bookId);
-    //throw new Error("Error!");
+    const bookId = params.bookId;
 
     const user = await getUser(session.user.email);
 
@@ -27,9 +26,9 @@ export async function DELETE(req, { params }) {
 
     if (!book) throw new Error();
 
-    await prisma.Notes.deleteMany({ where: { bookId: bookId } });
+    //await prisma.Notes.deleteMany({ where: { bookId: bookId } });
 
-    await prisma.ChaptersVerses.deleteMany({ where: { bookId: bookId } });
+    //await prisma.ChaptersVerses.deleteMany({ where: { bookId: bookId } });
 
     await prisma.Book.delete({
       where: { id: bookId },

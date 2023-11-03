@@ -14,11 +14,11 @@ export async function DELETE(req, { params }) {
   }
 
   try {
-    const chaptersVersesId = params.chaptersVersesId; //parseInt(params.bookId);
+    const chaptersVersesId = params.chaptersVersesId;
 
-    await prisma.Notes.deleteMany({
+    /* await prisma.Notes.deleteMany({
       where: { chaptersversesId: chaptersVersesId },
-    });
+    }); */
 
     await prisma.ChaptersVerses.delete({
       where: { id: chaptersVersesId },

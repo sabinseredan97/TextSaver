@@ -21,15 +21,27 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { nanoid } from "nanoid";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import Pagination from "@/components/Pagination";
+import { useSearchParams } from "next/navigation";
 
 export default function Page() {
+  const searchParams = useSearchParams();
   const [searchInput, setSearchInput] = useState("");
   let isMobile;
 
+  const page =
+    typeof searchParams.get("page") === "string"
+      ? parseInt(searchParams.get("page"))
+      : 1;
+  const limit =
+    typeof searchParams.get("limit") === "string"
+      ? parseInt(searchParams.get("limit"))
+      : 20;
+
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["myIndependentNotes"],
+    queryKey: [`myIndependentNotes-${page}-${limit}`],
     queryFn: () =>
-      fetch(`/api/get/independentNotes`, {
+      fetch(`/api/get/independentNotes/${page}/${limit}`, {
         method: "GET",
       }).then((res) => res.json()),
   });
@@ -50,10 +62,7 @@ export default function Page() {
     content = <LoadingSpinner />;
   } else if (isError || data.message === "Error!") {
     content = (
-      <div
-        className="alert alert-danger d-flex align-items-center"
-        role="alert"
-      >
+      <div className="flex items-center justify-center text-indigo-50 bg-red-400 h-24 rounded-lg">
         Nothing Found
       </div>
     );
@@ -64,7 +73,7 @@ export default function Page() {
   }
 
   return (
-    <>
+    <Pagination page={page} limit={limit}>
       {!content ? (
         <section className="text-center">
           {data && !data.message && (
@@ -145,6 +154,6 @@ export default function Page() {
       ) : (
         content
       )}
-    </>
+    </Pagination>
   );
 }

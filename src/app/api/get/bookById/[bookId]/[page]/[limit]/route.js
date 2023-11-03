@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "../../../../../auth/[...nextauth]/route";
 import { getUser } from "@/services/server-actions";
 import { prisma } from "@/db";
 
@@ -16,6 +16,9 @@ export async function GET(req, { params }) {
 
   try {
     const bookId = params.bookId;
+    const page = parseInt(params.page);
+    const limit = parseInt(params.limit);
+    const skip = (page - 1) * limit;
 
     const user = await getUser(session.user.email);
 
@@ -23,6 +26,8 @@ export async function GET(req, { params }) {
       where: { AND: [{ id: bookId, userId: user.id }] },
       include: {
         chaptersverses: {
+          skip: skip,
+          take: limit,
           orderBy: { createdAt: "desc" },
         },
         //notes: { orderBy: { createdAt: "desc" } },
