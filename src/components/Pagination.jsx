@@ -80,8 +80,11 @@ export default function Pagination({ children, page, limit }) {
             page <= 1 && "pointer-events-none opacity-50"
           )}
         >
-          Previous
+          Prev.
         </Link>
+        <p className="border border-input bg-transparent shadow-sm h-9 px-4 py-2 rounded-none">
+          {query.page}
+        </p>
         <Link
           href={{
             pathname: `${pathname}`,

@@ -1,36 +1,31 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+The app is hosted at https://text-saver.vercel.app
 
-First, run the development server:
+TextSaver is a web app to save notes, there are two sections, books where you can add a book and notes about chapters of that book, and independent notes which are just simple notes that are not related to anything
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+This is the login page, for now only google signin is avaliable.
+![Login Page](image.png)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This is the home page:
+![Home Page](image-1.png)
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+There is also a dark mode functionality:
+![Dark mode](image-2.png)
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+The books and independent notes sections on the navbar are dropdowns:
+![Drop down](image-3.png)
 
-## Learn More
+Here a independent note can be added:
+![ADD independent note](image-4.png)
+![Add independent note text](image-5.png)
+![Note created](image-6.png)
 
-To learn more about Next.js, take a look at the following resources:
+Here a book can be added: (the verse/s field in optional, it is nullable in the database)
+![Add book](image-7.png)
+The required fields must be filled to be able to submit the form (this works the same for the independent notes.)
+![Fill the required fields](image-8.png)
+![Fields filled](image-9.png)
+![book added](image-10.png)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+This is the see books and independent notes section, it also have pagination, you can choose what number of items to display on a page.
