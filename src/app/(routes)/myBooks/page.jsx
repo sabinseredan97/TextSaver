@@ -1,6 +1,5 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -9,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -20,6 +18,8 @@ import { Input } from "@/components/ui/input";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { useSearchParams } from "next/navigation";
 import Pagination from "@/components/Pagination";
+import useGetData from "@/hooks/useGetData";
+import NotFound from "@/components/NotFound";
 
 export default function Page() {
   const searchParams = useSearchParams();
@@ -34,13 +34,13 @@ export default function Page() {
       ? parseInt(searchParams.get("limit"))
       : 20;
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: [`myBooks-${page}-${limit}`],
-    queryFn: () =>
-      fetch(`/api/get/allBooks/${page}/${limit}`, {
-        method: "GET",
-      }).then((res) => res.json()),
-  });
+  const fetchQuery = `/api/get/allBooks/${page}/${limit}`;
+
+  const { data, isLoading, isError } = useGetData(fetchQuery, [
+    "myBooks",
+    page,
+    limit,
+  ]);
 
   const session = useSession();
 
@@ -57,11 +57,7 @@ export default function Page() {
   if (isLoading) {
     content = <LoadingSpinner />;
   } else if (isError || data.message === "Error!") {
-    content = (
-      <div className="flex items-center justify-center text-indigo-50 bg-red-400 h-24 rounded-lg">
-        Nothing Found
-      </div>
-    );
+    content = <NotFound />;
   }
 
   return (

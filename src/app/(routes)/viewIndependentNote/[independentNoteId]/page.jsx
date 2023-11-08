@@ -9,11 +9,9 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { redirect, useParams } from "next/navigation";
 import { useRef, useState } from "react";
-import { toast } from "react-toastify";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,9 +25,12 @@ import {
 } from "@/components/ui/alert-dialog";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { Separator } from "@/components/ui/separator";
+import useGetData from "@/hooks/useGetData";
+import useDeleteData from "@/hooks/useDeleteData";
+import useEditData from "@/hooks/useEditData";
+import NotFound from "@/components/NotFound";
 
 export default function Page() {
-  const [loading, setLoading] = useState(false);
   const [editNote, setEditNote] = useState(true);
   const params = useParams();
   const independentNoteId = decodeURIComponent(params.independentNoteId);
@@ -37,16 +38,30 @@ export default function Page() {
   var editedNote = "";
   let isMobile;
 
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: [`myIndependentNotes-${independentNoteId}`],
-    queryFn: () =>
-      fetch(
-        `/api/get/independentNoteById/${encodeURIComponent(independentNoteId)}`,
-        {
-          method: "GET",
-        }
-      ).then((res) => res.json()),
-  });
+  const fetchQuery = `/api/get/independentNoteById/${encodeURIComponent(
+    independentNoteId
+  )}`;
+
+  const { data, isLoading, isError } = useGetData(fetchQuery, [
+    "myIndependentNotes",
+    independentNoteId,
+  ]);
+
+  const { mutate: saveEditedNote, isLoading: loading } = useEditData(
+    submitEditedNote,
+    "Note edited!",
+    ["myIndependentNotes", independentNoteId],
+    setEditNote
+  );
+
+  const navigatePath = "/myIndependentNotes";
+
+  const { mutate: deleteNote, isLoading: isDeleting } = useDeleteData(
+    submitDelete,
+    "Note deleted!",
+    ["myIndependentNotes", independentNoteId],
+    navigatePath
+  );
 
   const session = useSession();
 
@@ -58,60 +73,39 @@ export default function Page() {
     );
   }
 
-  function enalbeEdit() {
+  function enableEdit() {
     setEditNote(!editNote);
     if (editNote) textareaRef.current.focus();
   }
 
-  async function saveEditedNote() {
+  async function submitEditedNote(e) {
+    e.preventDefault();
     editedNote = textareaRef.current.value;
-    try {
-      if (editedNote === "") throw new Error("Note cannot be empty!");
-      setLoading(true);
-      const response = await fetch("/api/edit/independentNote", {
-        method: "POST",
-        body: JSON.stringify({ independentNoteId, editedNote }),
-      });
-      if (response.status === 201) toast.success("Note edited");
-    } catch (error) {
-      toast.warn(error.message);
-    } finally {
-      setEditNote(!editNote);
-      setLoading(false);
-    }
+    if (editedNote === "") throw new Error("Note cannot be empty!");
+    const response = await fetch("/api/edit/independentNote", {
+      method: "POST",
+      body: JSON.stringify({ independentNoteId, editedNote }),
+    });
+    if (response.status !== 201)
+      throw new Error("A error occured, please try again!");
   }
 
-  async function deleteNote() {
-    try {
-      setLoading(true);
-      const response = await fetch(
-        `/api/delete/independentNotes/${encodeURIComponent(independentNoteId)}`,
-        {
-          method: "DELETE",
-        }
-      );
-      if (response.status === 200) {
-        toast.success("Note deleted!");
-        refetch();
+  async function submitDelete() {
+    const response = await fetch(
+      `/api/delete/independentNotes/${encodeURIComponent(independentNoteId)}`,
+      {
+        method: "DELETE",
       }
-    } catch (error) {
-      setLoading(false);
-      toast.error("A error occured!");
-    }
+    );
+    if (response.status !== 200)
+      throw new Error("A error occured, please try again!");
   }
 
   let content;
   if (isLoading) {
     content = <LoadingSpinner />;
   } else if (isError || data.message === "Error!") {
-    content = (
-      <div
-        className="alert alert-danger d-flex align-items-center"
-        role="alert"
-      >
-        Nothing Found
-      </div>
-    );
+    content = <NotFound />;
   }
 
   if (typeof window !== "undefined") {
@@ -138,14 +132,14 @@ export default function Page() {
                 <div className="mt-2">
                   {!editNote ? (
                     <Button
-                      onClick={saveEditedNote}
+                      onClick={(e) => saveEditedNote(e)}
                       className="me-2"
                       disabled={loading}
                     >
                       Save Note
                     </Button>
                   ) : (
-                    <Button onClick={enalbeEdit} className="me-2">
+                    <Button onClick={enableEdit} className="me-2">
                       Edit Note
                     </Button>
                   )}
@@ -168,8 +162,8 @@ export default function Page() {
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                          onClick={deleteNote}
-                          disabled={loading}
+                          onClick={(e) => deleteNote(e)}
+                          disabled={isDeleting}
                         >
                           Continue
                         </AlertDialogAction>

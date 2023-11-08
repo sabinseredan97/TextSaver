@@ -87,7 +87,7 @@ export default async function Page() {
       </div>
       <Separator className="mb-4" />
       <CardFooter className="relative">
-        <p className="text-sm text-muted-foreground absolute end-1">
+        <p className="text-sm text-muted-foreground absolute end-2">
           Thanks for choosing TextSaver
         </p>
       </CardFooter>

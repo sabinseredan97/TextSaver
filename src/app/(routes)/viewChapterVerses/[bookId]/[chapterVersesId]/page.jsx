@@ -1,11 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { redirect, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -31,14 +28,15 @@ import { Textarea } from "@/components/ui/textarea";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { useSearchParams } from "next/navigation";
 import Pagination from "@/components/Pagination";
+import useGetData from "@/hooks/useGetData";
+import useDeleteData from "@/hooks/useDeleteData";
+import NotFound from "@/components/NotFound";
 
 export default function Page() {
   const searchParams = useSearchParams();
   const params = useParams();
   const bookId = decodeURIComponent(params.bookId);
   const chapterVersesId = decodeURIComponent(params.chapterVersesId);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const queryClient = useQueryClient();
   let isMobile;
 
   const page =
@@ -50,31 +48,30 @@ export default function Page() {
       ? parseInt(searchParams.get("limit"))
       : 20;
 
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: [`book-${bookId}-${chapterVersesId}-${page}-${limit}`],
-    queryFn: () =>
-      fetch(
-        `/api/get/chapterVersesById/${encodeURIComponent(
-          bookId
-        )}/${encodeURIComponent(chapterVersesId)}/${page}/${limit}`,
-        {
-          method: "GET",
-        }
-      ).then((res) => res.json()),
-  });
+  const fetchQuery = `/api/get/chapterVersesById/${encodeURIComponent(
+    bookId
+  )}/${encodeURIComponent(chapterVersesId)}/${page}/${limit}`;
 
-  /* const { data: session } = useSession({
-    required: true,
-    onUnauthenticated() {
-      redirect(`/login?callbackUrl=/myBooks/${encodeURIComponent(bookId)}`);
-    },
-  }); */
+  const { data, isLoading, isError } = useGetData(fetchQuery, [
+    "book",
+    bookId,
+    chapterVersesId,
+    page,
+    limit,
+  ]);
+
+  const navigatePath = `/myBooks/${encodeURIComponent(bookId)}`;
+
+  const { mutate: deleteChptVs, isLoading: isDeleting } = useDeleteData(
+    submitDelete,
+    "Chapter & Verse/s Deleted!",
+    ["book", bookId, chapterVersesId],
+    navigatePath
+  );
 
   const session = useSession();
 
   if (session.status === "unauthenticated") {
-    //redirect("/login?callbackUrl=/create");
-    //return <div className="text-center">Unauthorised</div>;
     redirect(
       `/login?callbackUrl=/viewChapterVerses/${encodeURIComponent(
         bookId
@@ -82,36 +79,23 @@ export default function Page() {
     );
   }
 
-  async function deleteChapter() {
-    try {
-      setIsDeleting(true);
-      const response = await fetch(
-        `/api/delete/chaptersVerses/${chapterVersesId}`,
-        {
-          method: "DELETE",
-        }
-      );
-      if (response.status === 200) {
-        queryClient.cancelQueries([`book-${bookId}-${chapterVersesId}`]);
-        refetch();
-        toast.success("Chapter & Verse/s Deleted!");
+  async function submitDelete(e) {
+    e.preventDefault();
+    const response = await fetch(
+      `/api/delete/chaptersVerses/${chapterVersesId}`,
+      {
+        method: "DELETE",
       }
-    } catch (error) {
-      toast.error("A error occured!");
-    } finally {
-      setIsDeleting(false);
-    }
+    );
+    if (response.status !== 200)
+      throw new Error("A error occured, please try again!");
   }
 
   let content;
   if (isLoading || isDeleting) {
     content = <LoadingSpinner />;
   } else if (isError || data.message === "Error!") {
-    content = (
-      <div className="flex items-center justify-center text-indigo-50 bg-red-400 h-24 rounded-lg">
-        Nothing Found
-      </div>
-    );
+    content = <NotFound />;
   }
 
   if (typeof window !== "undefined") {
@@ -163,7 +147,7 @@ export default function Page() {
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
                             disabled={isDeleting}
-                            onClick={deleteChapter}
+                            onClick={(e) => deleteChptVs(e)}
                           >
                             Continue
                           </AlertDialogAction>

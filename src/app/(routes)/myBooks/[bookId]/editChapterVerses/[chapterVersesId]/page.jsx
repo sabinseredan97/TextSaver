@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { redirect, useParams } from "next/navigation";
 import { useRef, useState } from "react";
@@ -18,32 +18,39 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import useGetData from "@/hooks/useGetData";
+import useEditData from "@/hooks/useEditData";
+import NotFound from "@/components/NotFound";
 
 export default function Page() {
+  const queryClient = useQueryClient();
   const form = useForm();
-  const [loading, setLoading] = useState(false);
   const [edit, setEdit] = useState(true);
   const params = useParams();
   const bookId = decodeURIComponent(params.bookId);
   const chapterVersesId = decodeURIComponent(params.chapterVersesId);
   const inputRef = useRef();
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: [`book-chVs-${chapterVersesId}`],
-    queryFn: () =>
-      fetch(
-        `/api/get/chapterVersesById/${encodeURIComponent(
-          bookId
-        )}/${encodeURIComponent(chapterVersesId)}`,
-        {
-          method: "GET",
-        }
-      ).then((res) => res.json()),
-  });
+  const fetchQuery = `/api/get/chapterVersesById/${encodeURIComponent(
+    bookId
+  )}/${encodeURIComponent(chapterVersesId)}`;
+
+  const { data, isLoading, isError } = useGetData(fetchQuery, [
+    "book-chVs",
+    chapterVersesId,
+  ]);
+
   const [editedData, setEditedData] = useState({
     chapter: data?.chaptersverses[0].chapter,
     verses: data?.chaptersverses[0].verses,
   });
+
+  const { mutate: editChptVs, isLoading: loading } = useEditData(
+    handleSubmit,
+    "Chapter/s & verse/s edited",
+    ["book", bookId],
+    setEdit
+  );
 
   const session = useSession();
 
@@ -62,36 +69,22 @@ export default function Page() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    try {
-      if (editedData.chapter === "") throw new Error("Chapter is required");
-      if (editedData.verses === "")
-        setEditedData({ ...editedData, verses: null });
-      setLoading(true);
-      const response = await fetch("/api/edit/chapterVerses", {
-        method: "POST",
-        body: JSON.stringify({ chapterVersesId, editedData }),
-      });
-      if (response.status === 201) toast.success("Chapter/s & verse/s edited");
-    } catch (error) {
-      toast.warn(error.message);
-    } finally {
-      setEdit(!edit);
-      setLoading(false);
-    }
+    if (editedData.chapter === "") throw new Error("Chapter is required");
+    if (editedData.verses === "")
+      setEditedData({ ...editedData, verses: null });
+    const response = await fetch("/api/edit/chapterVerses", {
+      method: "POST",
+      body: JSON.stringify({ chapterVersesId, editedData }),
+    });
+    if (response.status !== 201)
+      throw new Error("A error oocured, please try again!");
   }
 
   let content;
   if (isLoading) {
     content = <LoadingSpinner />;
   } else if (isError || data.message === "Error!") {
-    content = (
-      <div
-        className="alert alert-danger d-flex align-items-center"
-        role="alert"
-      >
-        Nothing Found
-      </div>
-    );
+    content = <NotFound />;
   }
 
   return (
@@ -100,7 +93,7 @@ export default function Page() {
         <section>
           {data && !data.message && (
             <Form {...form}>
-              <form className="text-center" onSubmit={(e) => handleSubmit(e)}>
+              <form className="text-center" onSubmit={(e) => editChptVs(e)}>
                 <FormField
                   control={form.control}
                   name="book"

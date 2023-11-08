@@ -19,14 +19,14 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <ReactQueryProvider>
-      <html lang="en">
-        <body
-          className={cn(
-            "min-h-screen bg-background font-sans antialiased",
-            fontSans.variable
-          )}
-        >
+    <html lang="en">
+      <body
+        className={cn(
+          "min-h-screen bg-background font-sans antialiased",
+          fontSans.variable
+        )}
+      >
+        <ReactQueryProvider>
           <Provider>
             <ThemeProvider
               attribute="class"
@@ -41,8 +41,8 @@ export default function RootLayout({ children }) {
               <ReactToastContainer />
             </ThemeProvider>
           </Provider>
-        </body>
-      </html>
-    </ReactQueryProvider>
+        </ReactQueryProvider>
+      </body>
+    </html>
   );
 }

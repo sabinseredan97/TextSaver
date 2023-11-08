@@ -18,15 +18,31 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 
 export default function Page() {
+  const queryClient = useQueryClient();
   const form = useForm();
-  const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState({
     book: "",
     chapter: "",
     verse: "",
     note: "",
+  });
+
+  const { mutate: submitBook, isLoading } = useMutation({
+    mutationFn: (e) => handleSubmit(e),
+    onSuccess: () => {
+      toast.success("Created");
+      setData({
+        book: "",
+        chapter: "",
+        verse: "",
+        note: "",
+      });
+      queryClient.invalidateQueries(["myBooks"]);
+    },
+    onError: (error) => toast.error(error.message),
   });
 
   const session = useSession();
@@ -37,33 +53,21 @@ export default function Page() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    try {
-      if (data.book === "" || data.chapter === "" || data.note === "")
-        throw new Error("Fill the empty fields");
-      setIsLoading(true);
-      if (data.verse === "") setData({ ...data, verse: null });
+    if (data.book === "" || data.chapter === "" || data.note === "")
+      throw new Error("Fill the empty fields");
+    if (data.verse === "") setData({ ...data, verse: null });
 
-      const response = await fetch("/api/new/book", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
-      setData({
-        book: "",
-        chapter: "",
-        verse: "",
-        note: "",
-      });
-      if (response.status === 201) toast.success("Created!");
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setIsLoading(false);
-    }
+    const response = await fetch("/api/new/book", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+    if (response.status !== 201)
+      throw new Error("A error occured, please try again!");
   }
 
   return (
     <Form {...form}>
-      <form className="text-center" onSubmit={(e) => handleSubmit(e)}>
+      <form className="text-center" onSubmit={(e) => submitBook(e)}>
         <FormField
           control={form.control}
           name="book"

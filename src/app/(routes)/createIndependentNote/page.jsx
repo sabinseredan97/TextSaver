@@ -18,13 +18,27 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 
 export default function Page() {
+  const queryClient = useQueryClient();
   const form = useForm();
-  const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState({
     title: "",
     note: "",
+  });
+
+  const { mutate: submitNote, isLoading } = useMutation({
+    mutationFn: (e) => handleSubmit(e),
+    onSuccess: () => {
+      toast.success("Created");
+      setData({
+        title: "",
+        note: "",
+      });
+      queryClient.invalidateQueries(["myIndependentNotes"]);
+    },
+    onError: (error) => toast.error(error.message),
   });
 
   const session = useSession();
@@ -35,29 +49,19 @@ export default function Page() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    try {
-      if (data.title === "" || data.note === "")
-        throw new Error("Fill the empty fields");
-      setIsLoading(true);
-      const response = await fetch("/api/new/addIndependentNote", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
-      setData({
-        title: "",
-        note: "",
-      });
-      if (response.status === 201) toast.success("Created!");
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setIsLoading(false);
-    }
+    if (data.title === "" || data.note === "")
+      throw new Error("Fill the empty fields");
+    const response = await fetch("/api/new/addIndependentNote", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+    if (response.status !== 201)
+      throw new Error("A error occured, please try again!");
   }
 
   return (
     <Form {...form}>
-      <form className="text-center" onSubmit={(e) => handleSubmit(e)}>
+      <form className="text-center" onSubmit={(e) => submitNote(e)}>
         <FormField
           control={form.control}
           name="title"

@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { redirect, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import {
   Form,
@@ -19,28 +19,36 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import useGetData from "@/hooks/useGetData";
+import NotFound from "@/components/NotFound";
 
 export default function Page() {
+  const queryClient = useQueryClient();
   const form = useForm();
   const params = useParams();
-  const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
-    bookId: params.bookId,
+    bookId: decodeURIComponent(params.bookId),
     chapter: "",
     verse: "",
     note: "",
   });
 
+  const fetchQuery = `/api/get/bookById/${data.bookId}`;
+
   const {
     data: book,
     isLoading,
     isError,
-  } = useQuery({
-    queryKey: [`book-${decodeURIComponent(data.bookId)}`],
-    queryFn: () =>
-      fetch(`/api/get/bookById/${decodeURIComponent(data.bookId)}`, {
-        method: "GET",
-      }).then((res) => res.json()),
+  } = useGetData(fetchQuery, ["book", data.bookId]);
+
+  const { mutate: addChptVs, isLoading: loading } = useMutation({
+    mutationFn: (e) => handleSubmit(e),
+    onSuccess: () => {
+      toast.success("Added!");
+      setData({ ...data, chapter: "", verse: "", note: "" });
+      queryClient.invalidateQueries(["book", data.bookId]);
+    },
+    onError: (error) => toast.error(error.message),
   });
 
   const session = useSession();
@@ -53,36 +61,22 @@ export default function Page() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    try {
-      if (data.chapter === "" || data.note === "")
-        throw new Error("Fill the empty fields");
-      if (data.verse === "") setData({ ...data, verse: null });
-      setLoading(true);
-      const response = await fetch("/api/new/addChVerse", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
-      setData({ ...data, chapter: "", verse: "", note: "" });
-      if (response.status === 201) toast.success("Added!");
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setLoading(false);
-    }
+    if (data.chapter === "" || data.note === "")
+      throw new Error("Fill the empty fields");
+    if (data.verse === "") setData({ ...data, verse: null });
+    const response = await fetch("/api/new/addChVerse", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+    if (response.status !== 201)
+      throw new Error("A error occured, please try again!");
   }
 
   let content;
   if (isLoading) {
     content = <LoadingSpinner />;
   } else if (isError || data.message === "Error!") {
-    content = (
-      <div
-        className="alert alert-danger d-flex align-items-center"
-        role="alert"
-      >
-        Nothing Found
-      </div>
-    );
+    content = <NotFound />;
   }
 
   return (
@@ -91,7 +85,7 @@ export default function Page() {
         <section>
           {book && !book.message && (
             <Form {...form}>
-              <form className="text-center" onSubmit={(e) => handleSubmit(e)}>
+              <form className="text-center" onSubmit={(e) => addChptVs(e)}>
                 <FormField
                   control={form.control}
                   name="book"

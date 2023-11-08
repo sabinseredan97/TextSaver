@@ -1,11 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { redirect, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -32,14 +30,15 @@ import {
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { useSearchParams } from "next/navigation";
 import Pagination from "@/components/Pagination";
+import useGetData from "@/hooks/useGetData";
+import useDeleteData from "@/hooks/useDeleteData";
+import NotFound from "@/components/NotFound";
 
 export default function Page() {
   const searchParams = useSearchParams();
   const params = useParams();
   const bookId = decodeURIComponent(params.bookId);
   const [searchInput, setSearchInput] = useState("");
-  const [isDeleting, setIsDeleting] = useState(false);
-  const queryClient = useQueryClient();
 
   const page =
     typeof searchParams.get("page") === "string"
@@ -50,13 +49,23 @@ export default function Page() {
       ? parseInt(searchParams.get("limit"))
       : 20;
 
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: [`book-${bookId}-${page}-${limit}`],
-    queryFn: () =>
-      fetch(`/api/get/bookById/${bookId}/${page}/${limit}`, {
-        method: "GET",
-      }).then((res) => res.json()),
-  });
+  const fetchQuery = `/api/get/bookById/${bookId}/${page}/${limit}`;
+
+  const { data, isLoading, isError } = useGetData(fetchQuery, [
+    "book",
+    bookId,
+    page,
+    limit,
+  ]);
+
+  const navigatePath = "/myBooks";
+
+  const { mutate: deleteBook, isLoading: isDeleting } = useDeleteData(
+    submitDelete,
+    "Book deleted!",
+    ["book", bookId],
+    navigatePath
+  );
 
   const session = useSession();
 
@@ -69,33 +78,20 @@ export default function Page() {
     setSearchInput(e.target.value);
   }
 
-  async function deleteBook() {
-    try {
-      setIsDeleting(true);
-      const response = await fetch(`/api/delete/book/${bookId}`, {
-        method: "DELETE",
-      });
-      if (response.status === 200) {
-        queryClient.cancelQueries([`book-${bookId}`]);
-        refetch();
-        toast.success("Book deleted!");
-      }
-    } catch (error) {
-      toast.error("A error occured!");
-    } finally {
-      setIsDeleting(false);
-    }
+  async function submitDelete(e) {
+    e.preventDefault();
+    const response = await fetch(`/api/delete/book/${bookId}`, {
+      method: "DELETE",
+    });
+    if (response.status !== 200)
+      throw new Error("A error occured, please try again!");
   }
 
   let content;
   if (isLoading || isDeleting) {
     content = <LoadingSpinner />;
   } else if (isError || data.message === "Error!") {
-    content = (
-      <div className="flex items-center justify-center text-indigo-50 bg-red-400 h-24 rounded-lg">
-        Nothing Found
-      </div>
-    );
+    content = <NotFound />;
   }
 
   return (
@@ -130,7 +126,7 @@ export default function Page() {
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
-                            onClick={deleteBook}
+                            onClick={(e) => deleteBook(e)}
                             disabled={isDeleting}
                           >
                             Continue

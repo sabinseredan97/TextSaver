@@ -1,13 +1,12 @@
 "use client";
 
 import React from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { CheckIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +22,8 @@ import { nanoid } from "nanoid";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import Pagination from "@/components/Pagination";
 import { useSearchParams } from "next/navigation";
+import useGetData from "@/hooks/useGetData";
+import NotFound from "@/components/NotFound";
 
 export default function Page() {
   const searchParams = useSearchParams();
@@ -38,13 +39,13 @@ export default function Page() {
       ? parseInt(searchParams.get("limit"))
       : 20;
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: [`myIndependentNotes-${page}-${limit}`],
-    queryFn: () =>
-      fetch(`/api/get/independentNotes/${page}/${limit}`, {
-        method: "GET",
-      }).then((res) => res.json()),
-  });
+  const fetchQuery = `/api/get/independentNotes/${page}/${limit}`;
+
+  const { data, isLoading, isError } = useGetData(fetchQuery, [
+    "myIndependentNotes",
+    page,
+    limit,
+  ]);
 
   const session = useSession();
 
@@ -61,11 +62,7 @@ export default function Page() {
   if (isLoading) {
     content = <LoadingSpinner />;
   } else if (isError || data.message === "Error!") {
-    content = (
-      <div className="flex items-center justify-center text-indigo-50 bg-red-400 h-24 rounded-lg">
-        Nothing Found
-      </div>
-    );
+    content = <NotFound />;
   }
 
   if (typeof window !== "undefined") {

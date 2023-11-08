@@ -17,18 +17,29 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 
 export default function Page() {
+  const queryClient = useQueryClient();
   const form = useForm();
   const params = useParams();
-  const bookName = params.bookName;
-  const chapter = params.chapter;
-  const verses = params.verses;
-  const [isLoading, setIsLoading] = useState(false);
+  const bookName = decodeURIComponent(params.bookName);
+  const chapter = decodeURIComponent(params.chapter);
+  const verses = decodeURIComponent(params.verses);
   const [data, setData] = useState({
-    bookId: params.bookId,
-    chaptersversesId: params.chaptersverses,
+    bookId: decodeURIComponent(params.bookId),
+    chaptersversesId: decodeURIComponent(params.chaptersverses),
     note: "",
+  });
+
+  const { mutate: submitNote, isLoading } = useMutation({
+    mutationFn: (e) => handleSubmit(e),
+    onSuccess: () => {
+      toast.success("Note added!");
+      setData({ ...data, note: "" });
+      queryClient.invalidateQueries(["book", data.bookId]);
+    },
+    onError: (error) => toast.error(error.message),
   });
 
   const session = useSession();
@@ -47,28 +58,18 @@ export default function Page() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    try {
-      if (data.note === "") throw new Error("Please add a note");
-      setIsLoading(true);
-      const response = await fetch("/api/new/addNote", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
-      if (response.status === 201) toast.success("Note added!");
-      setData({
-        ...data,
-        note: "",
-      });
-    } catch (error) {
-      toast.warn(error.message);
-    } finally {
-      setIsLoading(false);
-    }
+    if (data.note === "") throw new Error("Please add a note");
+    const response = await fetch("/api/new/addNote", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+    if (response.status !== 201)
+      throw new Error("A error occured, please try again!");
   }
 
   return (
     <Form {...form}>
-      <form className="text-center" onSubmit={(e) => handleSubmit(e)}>
+      <form className="text-center" onSubmit={(e) => submitNote(e)}>
         <FormField
           control={form.control}
           name="book"
@@ -78,7 +79,7 @@ export default function Page() {
               <FormControl>
                 <Input
                   readOnly
-                  value={decodeURIComponent(bookName)}
+                  value={bookName}
                   name="book"
                   type="text"
                   className="form-control"
@@ -100,13 +101,7 @@ export default function Page() {
               <FormControl>
                 <Input
                   readOnly
-                  value={
-                    verses !== "null"
-                      ? decodeURIComponent(chapter) +
-                        ": " +
-                        decodeURIComponent(verses)
-                      : decodeURIComponent(chapter)
-                  }
+                  value={verses !== "null" ? chapter + ": " + verses : chapter}
                   name="chapter"
                   type="text"
                   className="form-control"

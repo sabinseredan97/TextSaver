@@ -15,7 +15,7 @@ export async function GET(req, { params }) {
   }
 
   try {
-    const { bookId, chapterVersesId } = params; //parseInt(params.noteId);
+    const { bookId, chapterVersesId } = params;
     const page = parseInt(params.page);
     const limit = parseInt(params.limit);
     const skip = (page - 1) * limit;
@@ -30,20 +30,12 @@ export async function GET(req, { params }) {
           skip: skip,
           take: limit,
           where: { chaptersversesId: chapterVersesId },
+          orderBy: { createdAt: "desc" },
         },
       },
     });
 
     if (!book || book.chaptersverses.length < 1) throw new Error();
-
-    /* const chaptersVerses = await prisma.ChaptersVerses.findUnique({
-      where: { id: chaptersVersesId },
-      include: {
-        notes: { orderBy: { createdAt: "desc" } },
-      },
-    });
-
-    if (!chaptersVerses) throw new Error(); */
 
     return NextResponse.json(book, { status: 200 });
   } catch (error) {

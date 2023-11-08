@@ -1,10 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { redirect, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -28,23 +26,40 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Textarea } from "@/components/ui/textarea";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import useGetData from "@/hooks/useGetData";
+import useDeleteData from "@/hooks/useDeleteData";
+import useEditData from "@/hooks/useEditData";
+import NotFound from "@/components/NotFound";
 
 export default function Page() {
   const params = useParams();
   const noteId = decodeURIComponent(params.noteId);
   var editedNote = "";
   const [editNote, setEditNote] = useState(true);
-  const [loading, setLoading] = useState(false);
   const textareaRef = useRef();
   let isMobile;
 
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: [`note-${noteId}`],
-    queryFn: () =>
-      fetch(`/api/get/noteById/${noteId}`, {
-        method: "GET",
-      }).then((res) => res.json()),
-  });
+  const fetchQuery = `/api/get/noteById/${noteId}`;
+
+  const { data, isLoading, isError } = useGetData(fetchQuery, ["note", noteId]);
+
+  const { mutate: saveEditedNote, isLoading: loading } = useEditData(
+    submitEditedNote,
+    "Note edited!",
+    ["note", noteId],
+    setEditNote
+  );
+
+  const navigatePath = `/viewChapterVerses/${encodeURIComponent(
+    data?.note?.bookId
+  )}/${encodeURIComponent(data?.note?.chaptersversesId)}`;
+
+  const { mutate: deleteNote, isLoading: isDeleting } = useDeleteData(
+    submitDelete,
+    "Note deleted!",
+    ["note", noteId],
+    navigatePath
+  );
 
   const session = useSession();
 
@@ -57,52 +72,32 @@ export default function Page() {
     if (editNote) textareaRef.current.focus();
   }
 
-  async function saveEditedNote() {
+  async function submitEditedNote(e) {
+    e.preventDefault();
     editedNote = textareaRef.current.value;
-    try {
-      if (editedNote === "") throw new Error("Note cannot be empty!");
-      setLoading(true);
-      const response = await fetch("/api/edit/note", {
-        method: "POST",
-        body: JSON.stringify({ noteId, editedNote }),
-      });
-      if (response.status === 201) toast.success("Note edited");
-    } catch (error) {
-      toast.warn(error.message);
-    } finally {
-      setEditNote(!editNote);
-      setLoading(false);
-    }
+    if (editedNote === "") throw new Error("Note cannot be empty!");
+    const response = await fetch("/api/edit/note", {
+      method: "POST",
+      body: JSON.stringify({ noteId, editedNote }),
+    });
+    if (response.status !== 201)
+      throw new Error("A error occured, please try again");
   }
 
-  async function deleteNote() {
-    try {
-      setLoading(true);
-      const response = await fetch(`/api/delete/note/${noteId}`, {
-        method: "DELETE",
-      });
-      if (response.status === 200) {
-        toast.success("Note deleted!");
-        refetch();
-      }
-    } catch (error) {
-      setLoading(false);
-      toast.error("A error occured!");
-    }
+  async function submitDelete(e) {
+    e.preventDefault();
+    const response = await fetch(`/api/delete/note/${noteId}`, {
+      method: "DELETE",
+    });
+    if (response.status !== 200)
+      throw new Error("A error occured, please try again!");
   }
 
   let content;
   if (isLoading) {
     content = <LoadingSpinner />;
   } else if (isError || data.message === "Error!") {
-    content = (
-      <div
-        className="alert alert-danger d-flex align-items-center"
-        role="alert"
-      >
-        Nothing Found
-      </div>
-    );
+    content = <NotFound />;
   }
 
   if (typeof window !== "undefined") {
@@ -139,7 +134,7 @@ export default function Page() {
                   </Button>
                 ) : (
                   <Button
-                    onClick={saveEditedNote}
+                    onClick={(e) => saveEditedNote(e)}
                     className="me-2 mt-1"
                     disabled={loading}
                   >
@@ -169,8 +164,8 @@ export default function Page() {
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
                       <AlertDialogAction
-                        onClick={deleteNote}
-                        disabled={loading}
+                        onClick={(e) => deleteNote(e)}
+                        disabled={isDeleting}
                       >
                         Continue
                       </AlertDialogAction>

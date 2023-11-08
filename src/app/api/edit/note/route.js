@@ -14,7 +14,7 @@ export async function POST(req) {
     const { noteId, editedNote } = await req.json();
 
     await prisma.Notes.update({
-      where: { id: noteId /*parseInt(noteId)*/ },
+      where: { id: noteId },
       data: { text: editedNote },
     });
 
