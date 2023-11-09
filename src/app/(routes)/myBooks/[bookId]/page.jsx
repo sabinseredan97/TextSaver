@@ -108,7 +108,11 @@ export default function Page() {
                   <div className="text-center">
                     <AlertDialog className="me-2">
                       <AlertDialogTrigger asChild>
-                        <Button variant="destructive" disabled={isDeleting}>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          disabled={isDeleting}
+                        >
                           Delete Book
                         </Button>
                       </AlertDialogTrigger>
@@ -144,6 +148,7 @@ export default function Page() {
                     <Link href={`/myBooks/${data.id}/addChVers`}>
                       <Button
                         variant="outline"
+                        size="sm"
                         className="bg-green-700 hover:bg-green-600"
                       >
                         New Chapter/s and Verse/s
