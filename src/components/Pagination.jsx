@@ -62,10 +62,10 @@ export default function Pagination({ children, page, limit }) {
         </div>
         <Button
           variant="secondary"
-          className="rounded-none rounded-r-lg"
+          className="rounded-none rounded-r-lg px-2"
           onClick={handleClick}
         >
-          ADD Limit
+          Set Limit
         </Button>
         <Link
           href={{
